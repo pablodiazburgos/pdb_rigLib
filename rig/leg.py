@@ -428,7 +428,7 @@ def _buildFkFoot_old( prefix, toeJnt, ankleJnt, limbIk1Ctrl, rigmodule, ctrlScal
     
 def _buildFkFoot( prefix, fkJoints , rigmodule, ctrlScale ):
     
-    toeFkCtrl = control.Control( lockHideChannels = ['t'], prefix = prefix + 'ToeFK', shape = 'cubeOnBaseX', moveTo = fkJoints[3], scale = ctrlScale * 2, ctrlParent = rigmodule.Controls )
+    toeFkCtrl = control.Control( lockHideChannels = ['t'], prefix = prefix + 'FkToe1', shape = 'cubeOnBaseX', moveTo = fkJoints[3], scale = ctrlScale * 2, ctrlParent = rigmodule.Controls )
     
     rigmodule.connectIkFk( toeFkCtrl.Off + '.v', reversed = True )
     

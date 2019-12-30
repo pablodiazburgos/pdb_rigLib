@@ -1132,7 +1132,8 @@ def build(
     fkPrefixSeq = []
     fkJointList = fkJoints
     
-    for i, j in enumerate( fkJointList ):
+    # make fk joints names sequence for naming controls
+    for i, j in enumerate( [upperJnt, midJnt, endJnt] ):
         
         baseJntName = name.removeSide( j ).capitalize()
         p = prefix + 'Fk' + name.removeSuffix( baseJntName )
