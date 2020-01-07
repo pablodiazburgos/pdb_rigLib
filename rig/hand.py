@@ -84,4 +84,5 @@ def build(
             'indexControls': fingerCtrls[1],
             'middleControls': fingerCtrls[2],
             'ringControls': fingerCtrls[3],
+            'pinkyControls': fingerCtrls[4],
             }
