@@ -12,3 +12,4 @@ import eyelids
 import tongue
 import hindLeg
 import tail
+import belt
