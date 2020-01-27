@@ -2,6 +2,7 @@
 module to work with blendshapes at pdb_rigLib.utils
 @category Rigging
 '''
+#TODO: finish  invertTargetVtxWeights module
 
 import maya.cmds as mc
 import maya.OpenMaya as om
@@ -169,7 +170,27 @@ def addTarget( blsNode, targetGeos, baseGeo = None, defVal = 0.0 ):
         mc.blendShape( blsNode, e = 1, target = ( baseGeo, idx, targetGeo, 1.0 ) )
         mc.setAttr( '%s.weight[%d]' % ( blsNode, idx ), defVal )
 
-
+def makeBlendShapeCombo( blsNode, targetA, targetB, comboBls ):
+    
+    '''
+    create combo for 2 targets triggering a 3rd one... useful for correctives blendshapes
+    :param blsNode: str, BlendShape node name
+    :param targetA: str, First target blendshape which actives the combo one
+    :param targetB: str, Second target blendshape which actives the combo one
+    :param comboBls: str, Combo blendshape (usually a corrective)
+    :return blsNode: str, mult double linear node which does the combo math
+    '''
+    # get combo prefix to rename new objects
+    comboPrefix = name.removeSuffix( comboBls )
+    
+    multNode = mc.createNode('multDoubleLinear', n = comboPrefix + '_mdl')
+    
+    # make connections
+    mc.connectAttr( blsNode + '.' + targetA, multNode + '.input1' )
+    mc.connectAttr( blsNode + '.' + targetB, multNode + '.input2' )
+    
+    mc.connectAttr( multNode + '.output',  blsNode + '.' + comboBls )
+    
 
 
 
