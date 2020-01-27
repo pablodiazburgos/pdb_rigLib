@@ -76,8 +76,6 @@ def buildSimpleLips(
             for ax in ['x', 'y', 'z']:
                 mc.connectAttr( lipCtrl.C + at + ax,  jnt + at + ax )
                 
-        
-        
         # attach jaw to a clean rotate group with direct connection and create a mult node to slow the movement
         rotHolderGrp = mc.group( em = True, r = True, p = jawJnt, n = lipName + '_rotHolder_grp' )
         offHolderGrp = transform.makeOffsetGrp( rotHolderGrp )
@@ -125,8 +123,9 @@ def buildSimpleLips(
         lipCtrls.append( lipCtrl )
         
     return {
-            'lipsCtrls': lipCtrl,
-            'MultNodes': MultNodes
+            'lipsCtrls': lipCtrls,
+            'MultNodes': MultNodes,
+            'module': rigmodule
             }
 
 

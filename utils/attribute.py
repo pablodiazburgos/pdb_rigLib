@@ -66,3 +66,52 @@ def removeUserDefined( obj ):
             mc.deleteAttr( plug )
     
     return userDefinedAts
+
+def openAllTransformVis( object, t = True, r = True, s = True, v = True ):
+    
+    '''
+    unlock and unhide all transform attributes, options are available for more control
+    In case Rotate is True, jointOrient channels will be unlocked too for joint type
+    
+    NOTE: if option is False, nothing is changed on the object
+    
+    @param object: name of object to set its transform and visibility attributes lock/keyable states
+    @param object: str
+    @param t: translate state
+    @type t: bool
+    @param r: translate state
+    @type r: bool
+    @param s: translate state
+    @type s: bool
+    @param v: translate state
+    @type v: bool
+    @return: None
+    '''
+    
+    if t or r or s or v:
+        
+        mc.lockNode( object, l = 0 )
+    
+    for channel, value in zip( ['t', 'r', 's'], [t, r, s] ):
+        
+        if not value:
+            
+            continue
+        
+        for axis in ['x', 'y', 'z']:
+            
+            mc.setAttr( object + '.' + channel + axis, l = 0, k = 1 )
+    
+    if v:
+        
+        mc.setAttr( object + '.v', l = 0, k = 1 )
+        
+    # unlock joint orient
+    if mc.nodeType( object ) == 'joint':
+        
+        if r:
+            
+            for axis in ['x', 'y', 'z']:
+                
+                mc.setAttr( object + '.jo' + axis, l = 0, k = 1 )
+    
