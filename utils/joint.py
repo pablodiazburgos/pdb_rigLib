@@ -932,3 +932,88 @@ def jointOrientKeyable( joints ):
     for j in joints:
         for ax in ['x', 'y', 'z']:
             mc.setAttr( '{}.jo{}'.format( j, ax ), k = 1 )
+
+def jointsMaxIncrementWithRemainder( joints, numplaces ):
+    
+    '''
+    divide chain of objects and return their indexes
+    algorithm makes even divisions and distributes remainder from beginning, making first divisions bigger
+    
+    this function is adjusted to work well on joint chain    
+    
+    :param joints: list(str), joint/object chain list
+    :param numplaces: int, number of positions to be found
+    :return: list( list, list ) - list of 2 lists of same size, first is joint placement indexes, second is increment sizes
+    
+    NOTE: first index has no increment, it`s only to fit the same joint chain loops
+    
+    numplaces - number of places to make
+    '''
+    
+    numjoints = len( joints )
+    if numplaces > numjoints: raise Exception( 'number of places cannot be higher then number of joints' )
+    
+    # fix values for joint spaces
+    
+    numspaces = numplaces - 1
+    numborders = numjoints - 1
+    
+    # ===================================================================
+    # make increment list
+    # ===================================================================
+    
+    incrementSize = numborders / numspaces
+    increments = [ incrementSize for i in range( numspaces ) ]
+    
+    remainder = numborders % numspaces
+    
+    for i in range( remainder ): increments[i] += 1
+    
+    jointplaceidx = 0
+    indeces = []
+    
+    
+    # ===================================================================
+    # make joint index list
+    # ===================================================================
+    
+    
+    for i in range( numplaces ):
+        
+        if i < numspaces:
+            
+            jointplaceidx += increments[i]
+            indeces.append( jointplaceidx )
+    
+    
+    # adjust increment lists to fit full joint chain including first joint (which has no increment)
+    
+    increments.insert( 0, 0 )
+    indeces.insert( 0, 0 )
+    
+    return [ indeces, increments ]
+
+def getlist( topjnt, listend = True, listfirst = True, longNames = False ):
+
+  '''
+  list joint hierachy starting with top joint
+  
+  :param topjnt: str, top joint to list its descendants
+  :param listfirst: bool, include top joint in the returned list (being first in list)
+  :param listend: bool, list end (leaf) joints of top joint`s hierarchy
+  :param longNames: bool, list joint names with full scene path for cases where we cannot prevent clashing names
+  :return: list(str), list of joints
+  '''
+  
+  joints = mc.listRelatives( topjnt, ad = 1, typ = 'joint', fullPath = longNames )
+  joints.reverse()
+  
+  allJoints = joints
+  if listfirst: allJoints = [topjnt] + allJoints
+  jointsedit = allJoints[:]
+  
+  if not listend:
+      
+      jointsedit = [ j for j in allJoints if mc.listRelatives( j, c = 1, typ = 'joint' ) ]
+  
+  return jointsedit

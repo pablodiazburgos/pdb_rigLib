@@ -119,3 +119,18 @@ def makeSecondDegree( posA, posB, prefix = 'new' ):
     shape.fixShapesName( crv )
     
     return crv
+
+def getCVpositions( curve ):
+    
+    '''
+    return list of CV positions in world space
+    
+    :param curve: str, nurbs curve to read CV positions
+    :return: list( list( float, float, float), ... ) - list with 3-float values lists
+    '''
+    
+    curveCvs = mc.ls( curve + '.cv[*]', fl = 1 )
+    
+    positions = [ mc.xform( cv, q = 1, t = 1, ws = 1 ) for cv in curveCvs ]
+    
+    return positions

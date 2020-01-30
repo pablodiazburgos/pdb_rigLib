@@ -12,3 +12,4 @@ import vector
 import constraint
 import blendShape
 import apiwrap
+import matrix

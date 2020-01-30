@@ -19,13 +19,12 @@ def disconnect( plug, source = True, destination = False ):
     if source:
         # check if there's any source attribute and remove the connections 
         cons = mc.listConnections( plug, s = 1, d = 0, p = 1 )
-        
         if cons:
             
             for con in cons:
-                mc.disconnectAttr( plug, con )
+                mc.disconnectAttr( con, plug )
                 
-            results[0] = cons
+        results[0] = cons
             
     if destination:
         
@@ -35,9 +34,12 @@ def disconnect( plug, source = True, destination = False ):
         if cons:
             
             for con in cons:
+                
                 mc.disconnectAttr( plug, con )
                 
-            results[1] = cons
+        results[1] = cons
+    
+    return results
     
 def reverse( sourceplug, destplug, prefix = 'utilnode' ):
     

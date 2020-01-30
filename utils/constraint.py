@@ -8,6 +8,7 @@ import maya.mel as mm
 
 from . import anim
 from . import transform
+from . import name
 
 #TODO: study makeSwitch and multiSwitch fuctions
 
@@ -222,3 +223,43 @@ def multiSwitch(driverObject, drivenPlugs, driverAttr = 'multiSwitchValue', blen
     if connectedPlug:
         
         mc.connectAttr(connectedPlug[0], driverObject + '.' + driverAttr)
+
+def pointConstraintToCurve(curve, objects, prefix = ''):
+    
+    '''
+    point constraint objects to curve to closest point on curve,
+    using nearestPointOnCurve and pointOnCurveInfo nodes
+    '''
+    
+    if not prefix:
+        
+        prefix = name.removeSuffix(objects[0])
+        prefix = name.removeEndNumbers(prefix)
+    
+    nearpointnode = mc.createNode('nearestPointOnCurve', n = prefix + '_npc')
+    mc.connectAttr(curve + '.worldSpace', nearpointnode + '.inputCurve')
+    
+    worldgrps = []
+    
+    for i, j in enumerate(objects):
+        
+        pos = mc.xform(j, q = 1, t = 1, ws = 1)
+        mc.setAttr(nearpointnode + '.inPosition', pos[0], pos[1], pos[2])
+        param = mc.getAttr(nearpointnode + '.parameter')
+        
+        pointnode = mc.createNode('pointOnCurveInfo', n = prefix + '%d_pci' % i)
+        mc.connectAttr(curve + '.worldSpace', pointnode + '.inputCurve')
+        mc.setAttr(pointnode + '.parameter', param)
+        
+        # make world position group
+        
+        worldgrp = mc.group(n = prefix + 'CurveWorld%d_grp', em = 1)
+        mc.connectAttr(pointnode + '.position', worldgrp + '.t')
+        mc.pointConstraint(worldgrp, j)
+        
+        worldgrps.append(worldgrp)
+        
+    
+    mc.delete(nearpointnode)
+    
+    return worldgrps    
