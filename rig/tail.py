@@ -224,7 +224,7 @@ def build(
     # main global ctrl
     # ==============================================
     
-    rootCtrl = control.Control( prefix = prefix + 'Root', shape = 'inverseCrown', colorName = 'green', translateTo = ikjoints[0], scale = ctrlScale * 10, ctrlParent = rigmodule.Controls )
+    rootCtrl = control.Control( prefix = prefix + 'Root', shape = 'inverseCrown', colorName = 'orange', translateTo = ikjoints[0], scale = ctrlScale * 4, ctrlParent = rigmodule.Controls, lockHideChannels = ['rz'] )
     attribute.addSection( rootCtrl.C )
     
     if localToggle:
@@ -327,7 +327,7 @@ def build(
     
     fkJoints = ikjoints[:-1]
     fkPrefixes = [ '%s%s%d' % ( prefix, 'Fk', i + 1 ) for i in range( len( fkJoints ) ) ]
-    fkControls = general.makeFkControlChain( fkJoints, scale = ctrlScale * 6, connectR = True, constraintSeq = [], constraintFirst = True, prefixSeq = fkPrefixes, ctrlshape = 'circleX' )
+    fkControls = general.makeFkControlChain( fkJoints, scale = ctrlScale * 6, connectR = True, constraintSeq = [], constraintFirst = True, prefixSeq = fkPrefixes, ctrlshape = 'circleZ' )
     
     mc.parent( fkControls[0].Off, rigmodule.Controls )
     rigmodule.connectIkFk( fkControls[0].Off + '.v', reversed = True )
@@ -395,7 +395,7 @@ def _makeTailIkControls( rootCtrl, cvs, prefix, scale, rigmodule ):
         cvpos = mc.xform( cvs[i], q = 1, t = 1, ws = 1 )
         tempPosGrp = mc.group( n = prefix + 'tempPosReference_grp', w = True, em = True )
         mc.xform( tempPosGrp, t = ( cvpos[0], cvpos[1], cvpos[2] ) )
-        cvCtrl = control.Control( prefix = prefix + 'Ik%d' % i, moveTo = tempPosGrp, shape = 'sphere', scale = scale * 4, ctrlParent = rootCtrl.C )
+        cvCtrl = control.Control( prefix = prefix + 'Ik%d' % i, moveTo = tempPosGrp, shape = 'cube', lockHideChannels = ['r'], scale = scale * 4, ctrlParent = rootCtrl.C )
         ikControls.append( cvCtrl )
         rigmodule.connectIkFk( cvCtrl.Off + '.v' )
         
@@ -476,7 +476,7 @@ def _makeTailIkSubControls( rootCtrl, cvs, prefix, scale, rigmodule ):
         cvpos = mc.xform( cvs[i], q = 1, t = 1, ws = 1 )
         tempPosGrp = mc.group( n = prefix + 'tempPosReference_grp', w = True, em = True )
         mc.xform( tempPosGrp, t = ( cvpos[0], cvpos[1], cvpos[2] ) )
-        cvCtrl = control.Control( prefix = prefix + 'IkSub%d' % i, moveTo = tempPosGrp, lockHideChannels = ['r'], shape = 'sphere', colorName = 'green', scale = scale * 3, ctrlParent = controlsPartGrp )
+        cvCtrl = control.Control( prefix = prefix + 'IkSub%d' % i, moveTo = tempPosGrp, lockHideChannels = ['r'], shape = 'squareZ', colorName = 'green', scale = scale * 3, ctrlParent = controlsPartGrp )
         ikControls.append( cvCtrl )
         
         mc.delete( tempPosGrp )
@@ -515,7 +515,7 @@ def _buildTwistUpVectorControl( startJnt, endJnt, rigmodule, prefix, ctrlScale )
     build control for changing twist up vector
     '''
     
-    upVectorCtrl = control.Control( prefix = '%sTwistUpVector' % prefix, lockHideChannels = ['t'], moveTo = endJnt, shape = 'circleX', scale = ctrlScale * 6.5, ctrlParent = rigmodule.Controls, colorName = 'orange' )
+    upVectorCtrl = control.Control( prefix = '%sTwistUpVector' % prefix, lockHideChannels = ['t', 'ry', 'rz'], moveTo = endJnt, shape = 'circleX', scale = ctrlScale * 6.5, ctrlParent = rigmodule.Controls, colorName = 'orange' )
     rigmodule.connectIkFk( upVectorCtrl.Off + '.v' )
     
     return upVectorCtrl
