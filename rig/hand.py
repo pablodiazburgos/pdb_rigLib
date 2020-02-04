@@ -52,7 +52,7 @@ def build(
     
     # make return directory
     
-    fingerCtrls = [ None ] * len( topFingJnts )
+    fingerCtrls = [ None ] * 5
     
     for i, topJnt in enumerate( topFingJnts ):
         
