@@ -1334,7 +1334,6 @@ def _createFkIkDuplicateChains(rigmodule, upperJnt, midJnt, endJnt):
         
     return fkJoints, ikJoints
     
-    
 def _connectIkFkJoints( bindJnts, fkJoints, ikJoints, rigmodule ):
     
     for bind,fk,ik in zip( bindJnts, fkJoints, ikJoints):

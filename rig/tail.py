@@ -32,7 +32,8 @@ def buildSimpleIk(
                   baseRigData = None,
                   controlsWorldOrient = False,
                   advancedTwist = False,
-                  worldUpVector = 'posY'
+                  worldUpVector = 'posY',
+                  stretch = True
                   ):
     """
     Note: currently setup only works with 7 cvs 3 degree curve and create 5 controls
@@ -154,12 +155,22 @@ def buildSimpleIk(
         mc.addAttr( chainControls[-1].C, ln = twistAt, k = 1 )
         mc.connectAttr( chainControls[-1].C + '.' + twistAt, chainIk + '.twist' )
     
+    if stretch:
+        # add stretching
+        stretchAmountAt = 'stretchAmount'
+        mc.addAttr( chainControls[0].C, ln = stretchAmountAt, at = 'float', k = True, min = 0, max = 1, dv = 1 )
+        chainStretchAmountPlug = chainControls[0].C + '.' + stretchAmountAt
+        chainStretchRes = joint.stretchyJointChain( chainJoints[:-1], curve = chainCurve, scalePlug = rigmodule.getModuleScalePlug(), prefix = prefix + 'ChainStretch', useCurve = True, stretchAmountPlug = chainStretchAmountPlug )
+        
+    
+    
     return{
         'module':rigmodule,
         'mainGrp':rigmodule.Main,
         'ctrlGrp':rigmodule.Controls,    
         'controls':chainControls,
-        'attachGrp':baseAttachGrp
+        'attachGrp':baseAttachGrp,
+        'stretchRes': chainStretchRes
         }
     
 def build( 

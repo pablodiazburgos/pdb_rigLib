@@ -570,7 +570,7 @@ def _buildReverseFoot( mainModuleGrp, limbIk1Ctrl, ikAttachGrp, prefix, ctrlScal
     mc.addAttr( limbIk1Ctrl.C, ln = 'ballTwist', at = 'float', k = 1 )
     mc.addAttr( limbIk1Ctrl.C, ln = 'tipTwist', at = 'float', k = 1 )
     mc.addAttr( limbIk1Ctrl.C, ln = 'heelTwist', at = 'float', k = 1 )
-    mc.addAttr( limbIk1Ctrl.C, ln = 'footTilt', at = 'float', k = 1 )
+    mc.addAttr( limbIk1Ctrl.C, ln = 'footTilt', at = 'float', k = 1, max = 10.0, min = -10.0 )
     mc.addAttr( limbIk1Ctrl.C, ln = 'ballTilt', at = 'float', k = 1 )
     
     mc.connectAttr( limbIk1Ctrl.C + '.ballRoll', revGrps[5] + '.rz' )
@@ -580,8 +580,8 @@ def _buildReverseFoot( mainModuleGrp, limbIk1Ctrl, ikAttachGrp, prefix, ctrlScal
     mc.connectAttr( limbIk1Ctrl.C + '.tipTwist', revGrps[1] + '.ry' )
     mc.connectAttr( limbIk1Ctrl.C + '.heelTwist', revGrps[0] + '.ry' )
     
-    anim.setDrivenKey( limbIk1Ctrl.C + '.footTilt', revGrps[3] + '.rx', [-1, 0], [-10, 0] )
-    anim.setDrivenKey( limbIk1Ctrl.C + '.footTilt', revGrps[4] + '.rx', [0, 1], [0, 10] )
+    anim.setDrivenKey( limbIk1Ctrl.C + '.footTilt', revGrps[3] + '.rx', [-10, 0], [-10, 0] )
+    anim.setDrivenKey( limbIk1Ctrl.C + '.footTilt', revGrps[4] + '.rx', [0, 10], [0, 10] )
     
     mc.connectAttr( limbIk1Ctrl.C + '.ballTilt', revGrps[5] + '.rx' )
     

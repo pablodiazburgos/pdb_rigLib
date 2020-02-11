@@ -638,17 +638,17 @@ def stretchyJointChain( joints, curve = '', lengthPlug = '', scalePlug = '', pre
     - scale is multiplying joint translateX
     - 3rd returned item is plug for controlling stretch amount, but if it was passed in arguments then it will be the same
     
-    @param joints: list(str), joint chain to be stretchy
-    @param curve: str, name of curve to drive joint chain length
-    @param lengthPlug: str, optional, length plug to replace curve for measuring length
-    @param scalePlug: str, scale plug to compensate rig scale, plug is object.attribute
-    @param prefix: str, prefix to name new objects
-    @param useJointScale: bool, use joint ScaleX attribute to stretch the chain instead of default TranslateX
-    @param doIk: bool, setup splineIK solver on given joints
-    @param useCurve: bool, switch parameter to enable using curve, otherwise lengthPlug needs to be provided
-    @param stretchAmountPlug: str, name of stretch amount plug with range 0-1, with 0 having no stretch, this will be returned as 3rd item in any case
-    @param stretchOffsetPlug: str, name of stretch offset plug to offset amount of stretch, this can be useful to make chain shorter or longer
-    @return: list( str ), 0 - addDoubleLinear node driving stretch (translate) for all joints, 1 - optional, name of IK handle, 2 - stretch amount plug
+    :param joints: list(str), joint chain to be stretchy
+    :param curve: str, name of curve to drive joint chain length
+    :param lengthPlug: str, optional, length plug to replace curve for measuring length
+    :param scalePlug: str, scale plug to compensate rig scale, plug is object.attribute
+    :param prefix: str, prefix to name new objects
+    :param useJointScale: bool, use joint ScaleX attribute to stretch the chain instead of default TranslateX
+    :param doIk: bool, setup splineIK solver on given joints
+    :param useCurve: bool, switch parameter to enable using curve, otherwise lengthPlug needs to be provided
+    :param stretchAmountPlug: str, name of stretch amount plug with range 0-1, with 0 having no stretch, this will be returned as 3rd item in any case
+    :param stretchOffsetPlug: str, name of stretch offset plug to offset amount of stretch, this can be useful to make chain shorter or longer
+    :return: list( str ), 0 - addDoubleLinear node driving stretch (translate) for all joints, 1 - optional, name of IK handle, 2 - stretch amount plug
     '''
     
     jointScaleAttribute = 'tx'
