@@ -20,6 +20,7 @@ from ..utils import curve
 from ..utils import joint
 from ..utils import distanceBetween
 from ..utils import connect
+from ..utils import attribute
 
 straightLimitPercentAt = 'straightLimitPerc'
 currentLengthPercentAt = 'currentLengthPerc'
@@ -1053,7 +1054,8 @@ def build(
             endOrientRefObject = '',
             flatWorldXZ = False,
             buildTwistJoints = True,
-            twistJointsNumber = 5
+            twistJointsNumber = 5,
+            stretch = True
             ):
     """
     :param upperJnt: str, upper joint
@@ -1170,6 +1172,10 @@ def build(
     # IK hand controls
     ik1Ctrl = control.Control( prefix = prefix + 'Ik1', translateTo = endJnt, rotateTo = endOrientRefObject, scale = ctrlScale * 4, shape = ikCtrlShape, ctrlParent = rigmodule.Controls )
     
+    # add stretch attributes
+    if stretch:
+        _addIkStretchAttributes( ik1Ctrl )
+   
     # make flat orient object for IK controls
     if flatWorldXZ and not endOrientRefObject:
         
@@ -1344,7 +1350,21 @@ def _connectIkFkJoints( bindJnts, fkJoints, ikJoints, rigmodule ):
         
         rigmodule.connectIkFk( '{}.{}'.format( constraintName, constraintAttr[1] ) )
         rigmodule.connectIkFk( '{}.{}'.format( constraintName, constraintAttr[0] ), reversed = True )
-        
+
+def _addIkStretchAttributes( ik1Ctrl ):
+    
+    '''
+    Add default attributes for ik stretch
+    '''
+    
+    attribute.addSection( ik1Ctrl.C, sectionName = 'Stretch' )
+    
+    mc.addAttr( ik1Ctrl.C, ln = 'stretchAmount', at = 'float', k = True, min = 0, max = 1, dv = 1 )
+    mc.addAttr( ik1Ctrl.C, ln = 'volumetric', at = 'float', k = True, min = 0, max = 1, dv = 0 )
+    mc.addAttr( ik1Ctrl.C, ln = 'stretchManual', at = 'float', k = True, min = -10, max = 10, dv = 1 )
+    mc.addAttr( ik1Ctrl.C, ln = 'stretchUpper', at = 'float', k = True, min = -10, max = 10, dv = 1 )
+    mc.addAttr( ik1Ctrl.C, ln = 'stretchLower', at = 'float', k = True, min = -10, max = 10, dv = 1 )
+    
 def _twistSetup( prefix, twistJointsNumber, upperJnt, midJnt, endJnt, rigmodule ):
     
     
