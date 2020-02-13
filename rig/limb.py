@@ -1513,15 +1513,40 @@ def _stretchTwistJoints( prefix, twistData, ik1Ctrl, stretchUpperOutPlug, stretc
         
         TwistJoints = twistData[i]['twistjoints']
         
+        # stretch and translate compensate
+        
         txVal = mc.getAttr( TwistJoints[1] + '.tx' )
         stretchTwistMdl = mc.createNode( 'multDoubleLinear', n = prefix + 'Stretch{}Twist_mdl'.format( posPrefix ) )
         mc.setAttr( stretchTwistMdl + '.input1', txVal )
         mc.connectAttr( stretchTwistSwitchOutPlug, stretchTwistMdl + '.input2' )
         stretchTwistOutPlug = stretchTwistMdl + '.output'
         
+        # squash setup
+        squashTwistMdv = mc.createNode( 'multiplyDivide', n = prefix + 'Squash{}Twist_mdl'.format( posPrefix ) )
+        mc.setAttr( squashTwistMdv + '.operation', 2 ) # divide operation
+        mc.setAttr( squashTwistMdv + '.input1X', 1 )
+        mc.connectAttr( stretchTwistSwitchOutPlug, squashTwistMdv + '.input2X' )
+        squashTwistOutPlug = squashTwistMdv + '.outputX'
+        
+        # volumetric switch
+        squashTwistSwitch = mc.createNode( 'blendTwoAttr', n = prefix + 'Volumetric{}TwistSwitch_bta'.format( posPrefix ) )
+        mc.connectAttr( ik1Ctrl.C + '.volumetric', squashTwistSwitch + '.attributesBlender' )
+        mc.setAttr( squashTwistSwitch + '.input[0]', 1 )
+        mc.connectAttr( squashTwistOutPlug, squashTwistSwitch + '.input[1]' )
+        squashTwistSwitchOutPlug = squashTwistSwitch + '.output'
+        
         for twistJnt in TwistJoints[1:]:
             
             mc.connectAttr( stretchTwistOutPlug, twistJnt + '.tx' )
+        
+        # squash connection
+        if i == 0:
+            TwistJoints = TwistJoints[1:]
+        
+        for twistJnt in TwistJoints:
+        
+            mc.connectAttr( squashTwistSwitchOutPlug, twistJnt + '.sy' )
+            mc.connectAttr( squashTwistSwitchOutPlug, twistJnt + '.sz' )
         
         i += 1
         
