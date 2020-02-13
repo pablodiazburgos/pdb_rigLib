@@ -1071,6 +1071,7 @@ def build(
     :param flatWorldXZ: str, orienting IK control based on end joint X aiming, useful for foot controls in leg module
     :param buildTwistJoints: bool, create twist joints setup
     :param twistJointsNumber: int, number of joints is going to be create by twist setup
+    :param stretch: bool, create stretch setup ( it works with or without twist setup )
     :return dictionary of multiple items from module
     """
     
@@ -1249,6 +1250,7 @@ def build(
     fkEndJntTargetGrp = mc.group( n = prefix + 'fkSafeOffsetHand_grp', em = 1, p = endJnt, r = True )
     mc.parent( fkEndJntTargetGrp, endFkCtrl.C )
     fkEndSafeOrientConstraintGrp = mc.group( n = prefix + 'fkSafeOrientConstraint_grp', em = 1, p = fkEndJntTargetGrp, r = True )
+    
     # disconnect direct connection and make constraint
     for axis in ['x', 'y', 'z']:
         connect.disconnect( '{}.r{}'.format( fkJoints[2], axis ) )

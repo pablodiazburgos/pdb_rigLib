@@ -1,8 +1,6 @@
 """
-Leg @ rig
+hindLeg @ rig
 """
-
-#TODO: add fuction for quads when front legs has clavicle
 
 import maya.cmds as mc
 
@@ -34,21 +32,19 @@ def build(
             ctrlScale = 1.0,
             baseRigData = None,
             flatWorldXZ = True,
-            buildIkRotCtl = False,
-            doReverseFoot = True,
+            doReverseFoot = False,
             heelLoc = None,
             tipLoc = None,
             outFootLoc = None,
             inFootLoc = None,
             endOrientRefObject = '',
-            doIkLimit = False,
-            stretchyAndBendy = False,
-            buildBendySubControls = False,
-            buildMiddleTweaker = False
+            buildTwistJoints = True,
+            twistJointsNumber = 5,
+            stretch = True
             ):
     
     '''
-    build leg rig using limb rig as a base
+    build hind leg rig using limb rig as a base
     
     :param upperJnt: str, upper joint (hips)
     :param lowerJnt: str, lower joint (knee)
@@ -79,15 +75,209 @@ def build(
                 prefix = prefix,
                 baseRigData = baseRigData,
                 ctrlScale = ctrlScale,
-                flatWorldXZ = flatWorldXZ,
-                doWorldAlignedEnd = False,
-                buildIkRotCtl = buildIkRotCtl,
                 endOrientRefObject = endOrientRefObject,
-                doIkLimit = doIkLimit,
-                isLeg = True,
-                stretchyAndBendy = stretchyAndBendy,
-                buildBendySubControls = buildBendySubControls,
-                buildMiddleTweaker = buildMiddleTweaker
+                flatWorldXZ = flatWorldXZ,
+                buildTwistJoints = buildTwistJoints,
+                twistJointsNumber = twistJointsNumber,
+                stretch = stretch,
+                isLeg = True
+                )
+    
+    # limb info
+    
+    limbIk1Ctrl = limbData['ik1Ctrl']
+    ankleFkCtrl = limbData['fkControls'][2]
+    ikAttachGrp = limbData['ikAttachGrp']
+    upperJnt = limbData['upperJnt']    
+    rigmodule = limbData['module']
+    ikUpperJnt = limbData['ikJoints'][0]
+    fkUpperJnt = limbData['fkJoints'][0]
+    
+    fkFootData = _buildFkFoot( prefix, toeJnt, ankleJnt, limbIk1Ctrl, limbData['module'], ctrlScale )
+    
+    footIkHandles = []
+    
+    ikFootData = _buildIkFoot( prefix, doReverseFoot, limbIk1Ctrl, ikAttachGrp, ankleJnt, toeJnt, ctrlScale, limbData['limbIk'], limbData['mainGrp'], heelLoc, tipLoc, outFootLoc, inFootLoc )
+    mc.parent( ikFootData['mainIkFootGrp'], limbData['ctrlGrp'] )
+    footIkHandles = [ ikFootData['ankleIk'], ikFootData['toeIk'], ikFootData['tipIk'] ]
+    
+    # drive leg twist by rotation
+    #_driveIkTwistByCtrlRy( limbData['ikBaseCtrl'].C, limbData['limbIk'], prefix, doReverse = True )
+    
+
+    # connect ikFk
+    
+    for ikh in footIkHandles:
+        
+        if ikh:
+            
+            limbData['module'].connectIkFk( ikh + '.ikBlend' )
+        
+    # connect ctrl vis
+    
+    limbData['module'].connectPrimaryVis( ikFootData['mainIkFootGrp'] )
+    
+    #===========================================================================
+    # rig clavicle
+    #===========================================================================
+    clavicleFkCtrl = None
+    clavicleIk = None
+    
+    if clavicleJnt:
+        # FK
+        clavicleJntChild = mc.listRelatives( clavicleJnt, c = 1, typ = 'joint' )[0]
+        shoulderFkRotateConst = mc.listConnections( limbData['fkControls'][0].Off + '.rx', type = 'constraint' )[0]
+        shoulderFkLocalConstTarget = mc.listConnections( shoulderFkRotateConst + '.target' )[0]  # this will return local target group
+        
+        # lock FK shoulder translate channels
+        for ax in ['x', 'y', 'z']:
+            
+            mc.setAttr( limbData['fkControls'][0].C + '.t' + ax, l = True, k = False )
+       
+        # IK
+        # unlock IK shoulder rotate channels and lock translate ones so it won't brake fk setup
+        for ax in ['x', 'y', 'z']:
+            
+            mc.setAttr( limbData['ikBaseCtrl'].C + '.t' + ax, l = 0, k = 1 )
+            mc.setAttr( limbData['ikBaseCtrl'].C + '.r' + ax, l = 0, k = 1 )
+        
+        
+        # attach base control and shoulder FK control
+        constraint.removeAll( limbData['ikBaseCtrl'].Off )
+        constraint.removeAll( ikUpperJnt )
+        constraint.removeAll( fkUpperJnt )
+        
+        # tweak IK shoulder control
+        side = name.getSide( prefix ) 
+        clavicleJntGrp = transform.makeGroup( prefix = side + '_clavicleRef', referenceObj = clavicleJnt )   
+        shoulderOrientGrp = mc.group( n = prefix + 'TEMPshoulderOrient_grp', em = True )
+        
+        if side == 'r':
+            
+            mc.rotate( 180, 0, 0, shoulderOrientGrp )
+        
+        mc.delete( mc.pointConstraint( clavicleJntGrp, limbData['ikBaseCtrl'].Off ) )
+        mc.delete( mc.orientConstraint( shoulderOrientGrp, limbData['ikBaseCtrl'].Off ) )
+        mc.delete( clavicleJntGrp, shoulderOrientGrp )
+        
+        shape.centerPointsToObjects( [ limbData['ikBaseCtrl'].C ], [ clavicleJntChild ] )
+ 
+        # attach controls
+        mc.parentConstraint( rigmodule.LocalSpace, limbData['ikBaseCtrl'].Off, sr = ['x', 'y', 'z'], mo = True )
+        upperFkCtrl = limbData['fkControls'][0]
+        
+    
+        mc.parent( upperFkCtrl.Off, limbData['ikBaseCtrl'].C )
+        mc.disconnectAttr( limbData['toggleCtrl'].C + '.fkIk', limbData['ikBaseCtrl'].Off + '.v' )
+        
+        # replace upper joint fk orient constraint for parent constraint so clavicle would drive
+        mc.parentConstraint( upperFkCtrl.C, fkUpperJnt, mo = True )
+            
+        ikBaseCtrlLocalObject = rigmodule.LocalSpace
+        
+        # create a duplicate of clavicle joint to be able to make an ik handle
+        ikClavPrefix = name.removeSuffix( clavicleJnt )
+        ikClavicleJnt = mc.duplicate( clavicleJnt, po = True, n = ikClavPrefix + 'Ik' )[0]
+        mc.parent( ikClavicleJnt, limbData['module'].Joints )
+        mc.parentConstraint( limbData['localSpaceGrp'], ikClavicleJnt, mo = True )
+        mc.parentConstraint( ikClavicleJnt, clavicleJnt, mo = True )
+            
+        # set proper radius
+        ikRadius = mc.getAttr( limbData['ikJoints'][0] + '.radius' )
+        mc.setAttr( ikClavicleJnt + '.radius', ikRadius )
+        mc.parent( limbData['ikJoints'][0], ikClavicleJnt )
+        mc.setAttr( ikClavicleJnt + '.ove', 1 )
+        mc.setAttr( ikClavicleJnt + '.ovc', 13 )
+        
+        # create ik 
+        clavicleIk = mc.ikHandle( n = prefix + 'Clavicle_ikh', sol = 'ikSCsolver', sj = ikClavicleJnt, ee = limbData['ikJoints'][0] )[0]
+        mc.parent( clavicleIk, rigmodule.Parts )
+        mc.parentConstraint( limbData['ikBaseCtrl'].C, clavicleIk, mo = True, sr = ['x', 'y', 'z'] )
+        mc.setAttr( clavicleIk + '.v', 0 )
+        
+        # hide ik and fk systems joints
+        mc.hide( ikClavicleJnt, limbData['fkJoints'][0] )
+
+    return {
+            'rigdata':limbData,
+            'module':limbData['module'],
+            'ik1Ctrl':limbData['ik1Ctrl'],
+            'ikBaseCtrl':limbData['ikBaseCtrl'],
+            'tipCtrl':ikFootData['tipCtrl'],
+            'ikBallCtrl':ikFootData['ballCtrl'],
+            'ikToeCtrl':ikFootData['toeCtrl'],
+            'mainGrp':limbData['mainGrp'],
+            'fkControls':limbData['fkControls'],
+            'globalSpaceGrp':limbData['globalSpaceGrp'],
+            'bodySpaceGrp':limbData['bodySpaceGrp'],
+            'localSpaceGrp':limbData['localSpaceGrp'],
+            'toggleGrp':limbData['toggleGrp'],
+            'settingsGrp':limbData['settingsGrp'],
+            'toggleCtrl':limbData['toggleCtrl'],
+            'clavicleFkCtrl':clavicleFkCtrl,
+            'clavicleIk':clavicleIk,
+            }
+
+def buildBckUp( 
+            clavicleJnt,
+            upperJnt,
+            lowerJnt,
+            ankleJnt,
+            toeJnt,
+            ikPoleVecRef,
+            prefix = 'new',
+            ctrlScale = 1.0,
+            baseRigData = None,
+            flatWorldXZ = True,
+            doReverseFoot = False,
+            heelLoc = None,
+            tipLoc = None,
+            outFootLoc = None,
+            inFootLoc = None,
+            endOrientRefObject = '',
+            buildTwistJoints = True,
+            twistJointsNumber = 5,
+            stretch = True
+            ):
+    
+    '''
+    build hind leg rig using limb rig as a base
+    
+    :param upperJnt: str, upper joint (hips)
+    :param lowerJnt: str, lower joint (knee)
+    :param ankleJnt: str, ankle joint
+    :param toeJnt: str, toe joint
+    :param ikPoleVecRef: str, reference object for position of IK pole vector control
+    :param endJntXasworld: list (x,y,z), world axis which will be aligned to X axis of ankle joint object
+    :param endJntYasworld: list (x,y,z), world axis which will be aligned to Y axis of ankle joint object
+    :param prefix: str, prefix to name new objects
+    :param ctrlScale: float, scale of controls
+    :param baseRigData: instance, base rig data returned from rigbase.base build() to connect visibility channels etc. to the main base
+    :param buildIkRotCtl: bool, - only used by arm module - build IK rotation control for using both rotation of world control or local elbow joint orientation
+    :param doReverseFoot:bool, build reverse foot and its attributes like ballRoll etc.
+    :param heelLoc: str, only used in mode doReverseFoot, heel pivot locator
+    :param tipLoc: str, optional, tip of foot pivot locator - used in doReverseFoot and also main foot control setup
+    :param outFootLoc: str, only used in mode doReverseFoot, outer foot side pivot locator
+    :param inFootLoc: str, only used in mode doReverseFoot, inner foot side pivot locator
+    :param endOrientRefObject: str, optional, reference object for end IK control orientation
+    :param doIkLimit: bool, build IK length limit system to prevent IK pop effect when IK goes fully straight
+    :return: dictionary with rig objects
+    '''     
+
+    limbData = limb.build( 
+                upperJnt = upperJnt,
+                midJnt = lowerJnt,
+                endJnt = ankleJnt,
+                ikPoleVecRef = ikPoleVecRef,
+                prefix = prefix,
+                baseRigData = baseRigData,
+                ctrlScale = ctrlScale,
+                endOrientRefObject = endOrientRefObject,
+                flatWorldXZ = flatWorldXZ,
+                buildTwistJoints = buildTwistJoints,
+                twistJointsNumber = twistJointsNumber,
+                stretch = stretch,
+                isLeg = True
                 )
     
     # limb info
@@ -105,7 +295,7 @@ def build(
     ikFootData = _buildIkFoot( prefix, doReverseFoot, limbIk1Ctrl, ikAttachGrp, ankleJnt, toeJnt, ctrlScale, limbData['limbIk'], limbData['mainGrp'], heelLoc, tipLoc, outFootLoc, inFootLoc )
     mc.parent( ikFootData['mainIkFootGrp'], limbData['ctrlGrp'] )
     footIkHandles = [ ikFootData['ankleIk'], ikFootData['toeIk'], ikFootData['tipIk'] ]
-
+    
     # drive leg twist by rotation
     #_driveIkTwistByCtrlRy( limbData['ikBaseCtrl'].C, limbData['limbIk'], prefix, doReverse = True )
     
@@ -121,6 +311,7 @@ def build(
     # connect ctrl vis
     
     limbData['module'].connectPrimaryVis( ikFootData['mainIkFootGrp'] )
+    
     #===========================================================================
     # rig clavicle
     #===========================================================================
