@@ -27,6 +27,7 @@ class MeshChecker():
         self.ui.triangles_btn.clicked.connect( lambda: self.checkArtifactFaces( artifactType = 'tris') )
         self.ui.cleanGeo_btn.clicked.connect( self.cleanGeo )
         self.ui.shderBack_btn.clicked.connect( self.shaderBack )
+        self.ui.absoluteZero_btn.clicked.connect( self.absoluteZero )
     
     def resetGeo(self):
         
@@ -261,8 +262,21 @@ class MeshChecker():
         
         mc.select( self.objectList )
         
-    
-    
+    def absoluteZero(self):
+       
+        objectList = mc.ls( sl = True, type = 'transform' )
+        
+        if not objectList:
+            
+            self.statusBar.showMessage("Please select at least one object")
+            self.statusBar.setStyleSheet("color: yellow") 
+            return
+        
+        for object in objectList:
+            mc.move( 0, 0, 0, object, rpr = True)
+            
+        self.statusBar.showMessage('Selected objects moved to absolute zero')
+        self.statusBar.setStyleSheet("color: green")  
     
     
     
