@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>463</width>
+    <width>472</width>
     <height>787</height>
    </rect>
   </property>
@@ -66,9 +66,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-248</y>
-            <width>390</width>
-            <height>665</height>
+            <y>-278</y>
+            <width>399</width>
+            <height>658</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -500,7 +500,7 @@
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
-                 <width>80</width>
+                 <width>50</width>
                  <height>20</height>
                 </size>
                </property>
@@ -514,6 +514,13 @@
               </widget>
              </item>
              <item>
+              <widget class="QPushButton" name="openGeoSnapshotFolder_btn">
+               <property name="text">
+                <string>Open Snapshot Folder</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <spacer name="horizontalSpacer_27">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
@@ -523,7 +530,7 @@
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
-                 <width>80</width>
+                 <width>50</width>
                  <height>20</height>
                 </size>
                </property>
@@ -1005,7 +1012,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>411</width>
+            <width>420</width>
             <height>380</height>
            </rect>
           </property>

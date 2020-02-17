@@ -31,7 +31,7 @@ from .animation import animationExporter
 from .animation import animHelpButtons
 
 from .utils import customStyleSheet
-
+'''
 packagePath = 'C:/Users/Pablo Diaz Burgos/Documents/maya/pdb_rigLib/toolbox'
 
 if not os.path.exists( packagePath ):
@@ -39,8 +39,8 @@ if not os.path.exists( packagePath ):
     
 if packagePath not in sys.path:
     sys.path.append(packagePath)
-
-#packagePath = 'C:\\hive\\Google Drive\\toolbox'    
+'''
+packagePath = 'C:\\hive\\Google Drive\\toolbox'    
 
 def maya_main_window():
     
