@@ -22,6 +22,8 @@ import webbrowser
 from .modelling import findSize
 from .modelling import meshChecker
 from .modelling import geoExporter
+from .modelling import geoSnapshot
+
 
 from .uvs import uvsTools
 
@@ -29,7 +31,7 @@ from .animation import animationExporter
 from .animation import animHelpButtons
 
 from .utils import customStyleSheet
-'''
+
 packagePath = 'C:/Users/Pablo Diaz Burgos/Documents/maya/pdb_rigLib/toolbox'
 
 if not os.path.exists( packagePath ):
@@ -37,8 +39,8 @@ if not os.path.exists( packagePath ):
     
 if packagePath not in sys.path:
     sys.path.append(packagePath)
-'''
-packagePath = 'C:\\hive\\Google Drive\\toolbox'    
+
+#packagePath = 'C:\\hive\\Google Drive\\toolbox'    
 
 def maya_main_window():
     
@@ -81,6 +83,11 @@ class DreamHouseToolBoxUI(QtWidgets.QDialog):
         self.ui.getSavePath_btn.setIcon(QtGui.QIcon(":fileOpen.png"))
         self.ui.getSavePath_btn.setIconSize( QtCore.QSize(18, 18) )
         self.ui.getSavePath_btn.setToolTip("Select File")
+        
+        self.ui.getGeoSnapshotPath_btn.setMaximumSize(20 , 20)
+        self.ui.getGeoSnapshotPath_btn.setIcon(QtGui.QIcon(":fileOpen.png"))
+        self.ui.getGeoSnapshotPath_btn.setIconSize( QtCore.QSize(18, 18) )
+        self.ui.getGeoSnapshotPath_btn.setToolTip("Select File")
         
         # set default maya units combo box
         defaultMayaUnit = mc.currentUnit( linear= True, q = True, f = True )
@@ -130,6 +137,10 @@ class DreamHouseToolBoxUI(QtWidgets.QDialog):
         self.meshChecker = meshChecker.MeshChecker( self.ui, self.statusBar )
         self.meshChecker.setConnections()
         
+        # geometry snapshot connections
+        self.geometrySnapshot = geoSnapshot.geometrySnapshot( self.ui, self.statusBar )
+        self.geometrySnapshot.setConnections()
+        
         # geometry exporter connections
         self.geometryFbxExporter = geoExporter.geometryExporter( self.ui, self.statusBar )
         self.geometryFbxExporter.setConnections()
@@ -159,7 +170,6 @@ class DreamHouseToolBoxUI(QtWidgets.QDialog):
         
         #self.ui.extraWidget_tab.tabBarDoubleClicked.connect(self.toggleExtraTabVis)
         
-   
     def suggestionPage(self):
         
         webbrowser.open(url = 'https://docs.google.com/document/d/1yt9jm5fx_xiEqJ1X6CY6mhyg7NUSujWs4K7WD2M7DR8/edit?usp=sharing', 

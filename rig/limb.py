@@ -21,6 +21,7 @@ from ..utils import joint
 from ..utils import distanceBetween
 from ..utils import connect
 from ..utils import attribute
+from ..utils import vector
 
 straightLimitPercentAt = 'straightLimitPerc'
 currentLengthPercentAt = 'currentLengthPerc'
@@ -1070,6 +1071,7 @@ def build(
     :param flatWorldXZ: str, orienting IK control based on end joint X aiming, useful for foot controls in leg module
     :param buildTwistJoints: bool, create twist joints setup
     :param twistJointsNumber: int, number of joints is going to be create by twist setup
+    :param stretch: bool, create stretch setup ( it works with or without twist setup )
     :return dictionary of multiple items from module
     """
     
@@ -1172,9 +1174,6 @@ def build(
     # IK hand controls
     ik1Ctrl = control.Control( prefix = prefix + 'Ik1', translateTo = endJnt, rotateTo = endOrientRefObject, scale = ctrlScale * 4, shape = ikCtrlShape, ctrlParent = rigmodule.Controls )
     
-    # add stretch attributes
-    if stretch:
-        _addIkStretchAttributes( ik1Ctrl )
    
     # make flat orient object for IK controls
     if flatWorldXZ and not endOrientRefObject:
@@ -1251,6 +1250,7 @@ def build(
     fkEndJntTargetGrp = mc.group( n = prefix + 'fkSafeOffsetHand_grp', em = 1, p = endJnt, r = True )
     mc.parent( fkEndJntTargetGrp, endFkCtrl.C )
     fkEndSafeOrientConstraintGrp = mc.group( n = prefix + 'fkSafeOrientConstraint_grp', em = 1, p = fkEndJntTargetGrp, r = True )
+    
     # disconnect direct connection and make constraint
     for axis in ['x', 'y', 'z']:
         connect.disconnect( '{}.r{}'.format( fkJoints[2], axis ) )
@@ -1281,6 +1281,13 @@ def build(
     twistData = None
     if buildTwistJoints:
         twistData = _twistSetup( prefix, twistJointsNumber, upperJnt, midJnt, endJnt, rigmodule )
+        
+    #===========================================================================
+    # stretch setup
+    #===========================================================================
+    if stretch:
+        _addIkStretchSetup( rigmodule, prefix, ikJoints, ik1Ctrl, upperJnt, twistData, toggleCtrl )
+    
     
     return {
     'module':rigmodule,
@@ -1351,6 +1358,102 @@ def _connectIkFkJoints( bindJnts, fkJoints, ikJoints, rigmodule ):
         rigmodule.connectIkFk( '{}.{}'.format( constraintName, constraintAttr[1] ) )
         rigmodule.connectIkFk( '{}.{}'.format( constraintName, constraintAttr[0] ), reversed = True )
 
+def _addIkStretchSetup( rigmodule, prefix, ikJoints, ik1Ctrl, upperJnt, twistData, toggleCtrl ):
+    
+    '''
+    Add ik stretch setup
+    '''
+    # Add stretch attrs to control
+    _addIkStretchAttributes( ik1Ctrl )
+    
+    # create locators for distances node reference
+    upperJntParent = mc.listRelatives( upperJnt, p = True )[0]
+    startLoc = mc.spaceLocator( n = prefix + 'StretchStart_loc' )[0]
+    
+    mc.delete( mc.parentConstraint( ikJoints[0], startLoc ) )
+    mc.parent( startLoc, rigmodule.Parts )
+    mc.parentConstraint( upperJntParent, startLoc, mo = True )
+    
+    # create stretch distance node
+    stretchDis = mc.createNode( 'distanceBetween', n = prefix + 'StretchDistance_dis' )
+    mc.connectAttr( startLoc + '.worldMatrix[0]', stretchDis + '.inMatrix1' )
+    mc.connectAttr( ik1Ctrl.C + '.worldMatrix[0]', stretchDis + '.inMatrix2' )
+    stretchDisOutPlug = stretchDis + '.distance'
+    
+    # get straight total distance
+    vecA = vector.from2Objects( ikJoints[0], ikJoints[1], normalized = False )
+    vecB = vector.from2Objects( ikJoints[1], ikJoints[2], normalized = False)
+    straightLength = vecA.length() + vecB.length()
+    
+    # global scale compensate
+    globalScaleMdl = mc.createNode( 'multDoubleLinear', n = prefix + 'ScaleCompStretch_mdl' )
+    mc.setAttr( globalScaleMdl + '.input1', straightLength )
+    mc.connectAttr( rigmodule.getModuleScalePlug(), globalScaleMdl + '.input2' )
+    globalScaleOutPlug = globalScaleMdl + '.output'
+    
+    # create stretch ratio multiply divide
+    stretchRatioMdv = mc.createNode( 'multiplyDivide', n = prefix + 'StretchRatio_mdv' )
+    mc.setAttr( stretchRatioMdv + '.operation', 2 ) # divide operation
+    mc.connectAttr( stretchDisOutPlug, stretchRatioMdv + '.input1X' )
+    mc.connectAttr( globalScaleOutPlug, stretchRatioMdv + '.input2X' )
+    stretchRatioOutPlug = stretchRatioMdv + '.outputX'
+    
+    # create stretch condition to avoid automatic shrink
+    stretchCon = mc.createNode( 'condition', n = prefix + 'StretchCond_con' )
+    mc.setAttr( stretchCon + '.operation', 3 ) # greater or equal operation
+    mc.connectAttr( stretchDisOutPlug, stretchCon + '.firstTerm' )
+    mc.connectAttr( globalScaleOutPlug, stretchCon + '.secondTerm' )
+    mc.connectAttr( stretchRatioOutPlug, stretchCon + '.colorIfTrueR' )
+    stretchConOutPlug = stretchCon + '.outColorR'
+    
+    # create blend2Attrs node for stretch switch
+    stretchSwitchBta = mc.createNode( 'blendTwoAttr', n = prefix + 'StretchSwitch_bta' )
+    mc.connectAttr( ik1Ctrl.C + '.stretchAmount', stretchSwitchBta + '.attributesBlender' )
+    mc.setAttr( stretchSwitchBta + '.input[0]', 1 )
+    mc.connectAttr( stretchConOutPlug, stretchSwitchBta + '.input[1]' )
+    stretchSwitchOutPlug = stretchSwitchBta + '.output'
+    
+    # create manual stretch multiplier
+    stretchManualMdl = mc.createNode( 'multDoubleLinear', n = prefix + 'StretchManual_mdl' )
+    mc.connectAttr( stretchSwitchOutPlug, stretchManualMdl + '.input1' )
+    mc.connectAttr( ik1Ctrl.C + '.stretchManual', stretchManualMdl + '.input2' )
+    stretchManualOutPlug = stretchManualMdl + '.output'
+    
+    # create upper stretch multiplier
+    stretchUpperMdl = mc.createNode( 'multDoubleLinear', n = prefix + 'stretchUpper_mdl' )
+    mc.connectAttr( ik1Ctrl.C + '.stretchUpper', stretchUpperMdl + '.input1' )
+    mc.connectAttr( stretchManualOutPlug, stretchUpperMdl + '.input2' )
+    stretchUpperOutPlug = stretchUpperMdl + '.output'
+    
+    # create lower stretch multiplier
+    stretchLowerMdl = mc.createNode( 'multDoubleLinear', n = prefix + 'StretchLower_mdl' )
+    mc.connectAttr( ik1Ctrl.C + '.stretchLower', stretchLowerMdl + '.input1' )
+    mc.connectAttr( stretchManualOutPlug, stretchLowerMdl + '.input2' )
+    stretchLowerOutPlug = stretchLowerMdl + '.output'
+    
+    # connect upper stretch to ik joint
+    upperPrefix = name.removeSuffix( ikJoints[1] )
+    txVal = mc.getAttr( ikJoints[1] + '.tx' )
+    stretchUpperJntMdl = mc.createNode( 'multDoubleLinear', n = upperPrefix + 'Stretch_mdl' )
+    mc.setAttr( stretchUpperJntMdl + '.input1', txVal )
+    mc.connectAttr( stretchUpperOutPlug, stretchUpperJntMdl + '.input2' )
+    stretchUpperJntOutPlug = stretchUpperJntMdl + '.output'
+    
+    mc.connectAttr( stretchUpperJntOutPlug, ikJoints[1] + '.tx' )
+    
+    # connect lower stretch to ik joint
+    lowerPrefix = name.removeSuffix( ikJoints[2] )
+    txVal = mc.getAttr( ikJoints[2] + '.tx' )
+    stretchLowerJntMdl = mc.createNode( 'multDoubleLinear', n = lowerPrefix + 'Stretch_mdl' )
+    mc.setAttr( stretchLowerJntMdl + '.input1', txVal )
+    mc.connectAttr( stretchLowerOutPlug, stretchLowerJntMdl + '.input2' )
+    stretchLowerJntOutPlug = stretchLowerJntMdl + '.output'
+    
+    mc.connectAttr( stretchLowerJntOutPlug, ikJoints[2] + '.tx' )
+    
+    if twistData:
+        _stretchTwistJoints( prefix, twistData, ik1Ctrl, stretchUpperOutPlug, stretchLowerOutPlug, toggleCtrl )
+    
 def _addIkStretchAttributes( ik1Ctrl ):
     
     '''
@@ -1389,7 +1492,69 @@ def _twistSetup( prefix, twistJointsNumber, upperJnt, midJnt, endJnt, rigmodule 
 
     lowePartData = joint.makeTwistJoints( midJnt, endJnt, twistJointsNumber )
     
-    twistJointsDataList = [ upperJnt, lowePartData ]
+    twistJointsDataList = [ upperPartdata, lowePartData ]
     
     return twistJointsDataList 
+
+def _stretchTwistJoints( prefix, twistData, ik1Ctrl, stretchUpperOutPlug, stretchLowerOutPlug, toggleCtrl ):
+    
+    '''
+    add stretch setup to twist joints
+    '''
+    
+    posPrefixList = [ 'Upper', 'Lower' ]
+    i = 0
+    
+    for posPrefix, stretchOutPlug in zip( posPrefixList, [ stretchUpperOutPlug, stretchLowerOutPlug ] ):
+        
+        stretchTwistSwitch = mc.createNode( 'blendTwoAttr', n = prefix + 'Stretch{}TwistSwitch_bta'.format( posPrefix ) )
+        mc.connectAttr( toggleCtrl.C + '.fkIk', stretchTwistSwitch + '.attributesBlender' )
+        mc.setAttr( stretchTwistSwitch + '.input[0]', 1 )
+        mc.connectAttr( stretchOutPlug, stretchTwistSwitch + '.input[1]' )
+        stretchTwistSwitchOutPlug = stretchTwistSwitch + '.output'
+        
+        TwistJoints = twistData[i]['twistjoints']
+        
+        # stretch and translate compensate
+        
+        txVal = mc.getAttr( TwistJoints[1] + '.tx' )
+        stretchTwistMdl = mc.createNode( 'multDoubleLinear', n = prefix + 'Stretch{}Twist_mdl'.format( posPrefix ) )
+        mc.setAttr( stretchTwistMdl + '.input1', txVal )
+        mc.connectAttr( stretchTwistSwitchOutPlug, stretchTwistMdl + '.input2' )
+        stretchTwistOutPlug = stretchTwistMdl + '.output'
+        
+        # squash setup
+        squashTwistMdv = mc.createNode( 'multiplyDivide', n = prefix + 'Squash{}Twist_mdl'.format( posPrefix ) )
+        mc.setAttr( squashTwistMdv + '.operation', 2 ) # divide operation
+        mc.setAttr( squashTwistMdv + '.input1X', 1 )
+        mc.connectAttr( stretchTwistSwitchOutPlug, squashTwistMdv + '.input2X' )
+        squashTwistOutPlug = squashTwistMdv + '.outputX'
+        
+        # volumetric switch
+        squashTwistSwitch = mc.createNode( 'blendTwoAttr', n = prefix + 'Volumetric{}TwistSwitch_bta'.format( posPrefix ) )
+        mc.connectAttr( ik1Ctrl.C + '.volumetric', squashTwistSwitch + '.attributesBlender' )
+        mc.setAttr( squashTwistSwitch + '.input[0]', 1 )
+        mc.connectAttr( squashTwistOutPlug, squashTwistSwitch + '.input[1]' )
+        squashTwistSwitchOutPlug = squashTwistSwitch + '.output'
+        
+        for twistJnt in TwistJoints[1:]:
+            
+            mc.connectAttr( stretchTwistOutPlug, twistJnt + '.tx' )
+        
+        # squash connection
+        if i == 0:
+            TwistJoints = TwistJoints[1:]
+        
+        for twistJnt in TwistJoints:
+        
+            mc.connectAttr( squashTwistSwitchOutPlug, twistJnt + '.sy' )
+            mc.connectAttr( squashTwistSwitchOutPlug, twistJnt + '.sz' )
+        
+        i += 1
+        
+
+        
+        
+        
+    
     

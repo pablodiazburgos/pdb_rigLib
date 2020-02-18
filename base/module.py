@@ -21,7 +21,7 @@ controlVisAt = 'controlVis'
 mainCtrlVisAt = 'mainCtrlVis'
 primaryCtrlVisAt = 'primaryCtrlVis'
 
-ikFkSwitch = False  # False value will make float blend between IK / FK, True will make boolean switch
+ikFkSwitch = True  # False value will make float blend between IK / FK, True will make boolean switch
 
 
 class Module():

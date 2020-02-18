@@ -273,7 +273,6 @@ def build(
     mc.parent( limbData['ikJoints'][0], ikClavicleJnt )
     mc.setAttr( ikClavicleJnt + '.ove', 1 )
     mc.setAttr( ikClavicleJnt + '.ovc', 13 )
-        
     
     # create ik 
     clavicleIk = mc.ikHandle( n = prefix + 'Clavicle_ikh', sol = 'ikSCsolver', sj = ikClavicleJnt, ee = limbData['ikJoints'][0] )[0]
