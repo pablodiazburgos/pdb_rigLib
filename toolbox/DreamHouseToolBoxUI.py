@@ -19,6 +19,7 @@ import sys
 import os
 import webbrowser
 
+from .modelling import makeModelFolders
 from .modelling import findSize
 from .modelling import meshChecker
 from .modelling import geoExporter
@@ -79,6 +80,11 @@ class DreamHouseToolBoxUI(QtWidgets.QDialog):
         self.create_connections()
         
         # set selectFile button initial values
+        self.ui.getModelFoldersPath_btn.setMaximumSize(20 , 20)
+        self.ui.getModelFoldersPath_btn.setIcon(QtGui.QIcon(":fileOpen.png"))
+        self.ui.getModelFoldersPath_btn.setIconSize( QtCore.QSize(18, 18) )
+        self.ui.getModelFoldersPath_btn.setToolTip("Select File")
+        
         self.ui.getSavePath_btn.setMaximumSize(20 , 20)
         self.ui.getSavePath_btn.setIcon(QtGui.QIcon(":fileOpen.png"))
         self.ui.getSavePath_btn.setIconSize( QtCore.QSize(18, 18) )
@@ -128,6 +134,10 @@ class DreamHouseToolBoxUI(QtWidgets.QDialog):
         #=======================================================================
         # modelling tab  connection
         #=======================================================================
+        
+         # create model folders connections
+        self.makeModelFolders = makeModelFolders.CreateModelFolders( self.ui, self.statusBar )
+        self.makeModelFolders.setConnections()
         
         # create size connections
         self.connectSizeGuidesTool = findSize.SizeTool( self.ui, self.statusBar )
