@@ -1,7 +1,7 @@
 """
 module with multiple tools to check different issues may happend with geometry 
 """
-
+# ... 
 import maya.cmds as mc
 import maya.mel as mm
 
