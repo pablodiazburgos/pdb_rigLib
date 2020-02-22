@@ -86,6 +86,9 @@ class CreateModelFolders():
         modelFolders = [
                     'cc',
                     'textures',
+                    'references',
+                    'screenshots',
+                    'feedback',
                     'export',
                     'export/obj',
                     'export/obj/{}'.format( version ),
@@ -100,7 +103,7 @@ class CreateModelFolders():
         
         # define version in sub folders
 
-        versionTempFolders = modelFolders[6:]
+        versionTempFolders = modelFolders[9:]
         
         for folder in modelFolders:
             

@@ -25,7 +25,7 @@ class AnimHelpButtons():
         self.ui.freezeSelCtrls_btn.clicked.connect( self.freezeSel )
         
     def freezeAll(self):
-        controls = mc.ls('*_ctl',type='transform')
+        controls = mc.ls(['*_ctl', '*:*_ctl'],type='transform')
         for c in controls:
             for channel in ['t','r']:
                 for axis in ['x','y','z']:
@@ -36,7 +36,7 @@ class AnimHelpButtons():
         self.statusBar.setStyleSheet("color: green")
   
     def freezeSel(self):
-        controls = mc.ls('*_ctl',type='transform', sl = True)
+        controls = mc.ls(['*_ctl', '*:*_ctl'],type='transform', sl = True)
 
         if not controls:
             self.statusBar.showMessage("Please select at least one control") 

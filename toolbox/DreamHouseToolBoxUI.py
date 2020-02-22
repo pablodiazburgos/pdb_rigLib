@@ -28,6 +28,8 @@ from .modelling import geoSnapshot
 
 from .uvs import uvsTools
 
+from .animation import makeAnimFolders
+from .animation import animKeyOffset
 from .animation import animationExporter
 from .animation import animHelpButtons
 
@@ -78,22 +80,7 @@ class DreamHouseToolBoxUI(QtWidgets.QDialog):
         self.init_ui()
         self.create_layout()
         self.create_connections()
-        
-        # set selectFile button initial values
-        self.ui.getModelFoldersPath_btn.setMaximumSize(20 , 20)
-        self.ui.getModelFoldersPath_btn.setIcon(QtGui.QIcon(":fileOpen.png"))
-        self.ui.getModelFoldersPath_btn.setIconSize( QtCore.QSize(18, 18) )
-        self.ui.getModelFoldersPath_btn.setToolTip("Select File")
-        
-        self.ui.getSavePath_btn.setMaximumSize(20 , 20)
-        self.ui.getSavePath_btn.setIcon(QtGui.QIcon(":fileOpen.png"))
-        self.ui.getSavePath_btn.setIconSize( QtCore.QSize(18, 18) )
-        self.ui.getSavePath_btn.setToolTip("Select File")
-        
-        self.ui.getGeoSnapshotPath_btn.setMaximumSize(20 , 20)
-        self.ui.getGeoSnapshotPath_btn.setIcon(QtGui.QIcon(":fileOpen.png"))
-        self.ui.getGeoSnapshotPath_btn.setIconSize( QtCore.QSize(18, 18) )
-        self.ui.getGeoSnapshotPath_btn.setToolTip("Select File")
+        self.connectSelectIconBtn()
         
         # set default maya units combo box
         defaultMayaUnit = mc.currentUnit( linear= True, q = True, f = True )
@@ -105,6 +92,13 @@ class DreamHouseToolBoxUI(QtWidgets.QDialog):
         # set status bar default message
         self.statusBar.setStyleSheet("color: white")
         self.statusBar.showMessage( "Dream House ToolBox V001" )
+        
+        # temp
+        #self.helpQTab =  self.ui.extraWidget_tab.help_tab
+        #self.ui.extraWidget_tab.hide()
+        #self.ui.extraWidget_tab.addTab()
+        
+        
         
     def init_ui(self):
         
@@ -135,7 +129,7 @@ class DreamHouseToolBoxUI(QtWidgets.QDialog):
         # modelling tab  connection
         #=======================================================================
         
-         # create model folders connections
+        # create model folders connections
         self.makeModelFolders = makeModelFolders.CreateModelFolders( self.ui, self.statusBar )
         self.makeModelFolders.setConnections()
         
@@ -164,6 +158,15 @@ class DreamHouseToolBoxUI(QtWidgets.QDialog):
         #=======================================================================
         # animation tab connections
         #=======================================================================
+        # create model folders connections
+        self.makeAnimFolders = makeAnimFolders.CreateAnimFolders( self.ui, self.statusBar )
+        self.makeAnimFolders.setConnections()
+        
+        # animation Key Offset
+        self.connectAnimKeyOffset = animKeyOffset.AnimKeyOffset( self.ui, self.statusBar )
+        self.connectAnimKeyOffset.setConnections()
+        
+        
         # animation exporter
         self.connectAnimExporter = animationExporter.AnimationExporter( self.ui, self.statusBar )
         self.connectAnimExporter.setConnections()
@@ -198,4 +201,25 @@ class DreamHouseToolBoxUI(QtWidgets.QDialog):
         self.statusBar.setStyleSheet( "color: green" )
         self.statusBar.showMessage( "opening Maya Commands help page" )   
     
+    def connectSelectIconBtn(self):
+      
+        # set selectFile button initial values
+        self.ui.getModelFoldersPath_btn.setMaximumSize(20 , 20)
+        self.ui.getModelFoldersPath_btn.setIcon(QtGui.QIcon(":fileOpen.png"))
+        self.ui.getModelFoldersPath_btn.setIconSize( QtCore.QSize(18, 18) )
+        self.ui.getModelFoldersPath_btn.setToolTip("Select File")
         
+        self.ui.getSavePath_btn.setMaximumSize(20 , 20)
+        self.ui.getSavePath_btn.setIcon(QtGui.QIcon(":fileOpen.png"))
+        self.ui.getSavePath_btn.setIconSize( QtCore.QSize(18, 18) )
+        self.ui.getSavePath_btn.setToolTip("Select File")
+        
+        self.ui.getGeoSnapshotPath_btn.setMaximumSize(20 , 20)
+        self.ui.getGeoSnapshotPath_btn.setIcon(QtGui.QIcon(":fileOpen.png"))
+        self.ui.getGeoSnapshotPath_btn.setIconSize( QtCore.QSize(18, 18) )
+        self.ui.getGeoSnapshotPath_btn.setToolTip("Select File")
+        
+        self.ui.getCreateAnimFoldersPath_btn.setMaximumSize(20 , 20)
+        self.ui.getCreateAnimFoldersPath_btn.setIcon(QtGui.QIcon(":fileOpen.png"))
+        self.ui.getCreateAnimFoldersPath_btn.setIconSize( QtCore.QSize(18, 18) )
+        self.ui.getCreateAnimFoldersPath_btn.setToolTip("Select File")
