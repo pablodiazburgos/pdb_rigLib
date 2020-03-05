@@ -12,8 +12,6 @@ class MeshChecker():
     
     def __init__(self, ui, statusBar):
         
-                # get buttons state
-        
         # initialize objects
         self.ui = ui
         self.statusBar = statusBar

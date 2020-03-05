@@ -19,8 +19,8 @@ def getRelated( shapeObj ):
     '''
     find related skinCluster if object is skinned
     
-    @param shapeObj: str or list(str), shape or transform with shape or list with shapes from the same object
-    @return: (str) skinCluster, if not found return None
+    :param shapeObj: str or list(str), shape or transform with shape or list with shapes from the same object
+    :return: (str) skinCluster, if not found return None
     '''
     
     # get object shapes in case there was transform

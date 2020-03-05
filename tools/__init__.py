@@ -10,3 +10,4 @@ import footRigLocators
 import fkIkSnap
 import mirrorCvPositions
 import vectorTrigger
+import gameTools
