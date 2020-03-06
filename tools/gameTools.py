@@ -5,13 +5,16 @@ gameTools at rigLib.tools
 
 tools specific for game rigs
 '''
+import os.path
 
 import maya.cmds as mc
+import maya.mel as mm
 
 from ..utils import joint
 from ..utils import name
 from ..utils import skinCluster
 
+from . import bSkinSaver
 
 def createGameJoints( skinnedObjects = [], gamePrefix = 'game_', baseRigData = None ):
     
@@ -109,7 +112,8 @@ def _gameJointsSetup( scJoints, gamePrefix, parentGrp ):
 
         mc.parent( gameParent[0], gameParent[1] )
         mc.parentConstraint( gameParent[2], gameParent[0], mo = True )
-        mc.scaleConstraint( gameParent[2], gameParent[0], mo = True )
+        for axis in ['.sx', '.sy', '.sz']:
+            mc.connectAttr( gameParent[2] + axis, gameParent[0] + axis )
         
     # create game joints set
     gameJointsSet = mc.sets( n = 'gameJoints_set' )
@@ -120,9 +124,69 @@ def _gameJointsSetup( scJoints, gamePrefix, parentGrp ):
     origRootJnt = gameRootJnt[ len( gamePrefix ): ]
     
     mc.parentConstraint( origRootJnt, gameRootJnt, mo = True )
-    mc.scaleConstraint( origRootJnt, gameRootJnt, mo = True )
+    for axis in ['.sx', '.sy', '.sz']:
+            mc.connectAttr(origRootJnt + axis, gameRootJnt + axis )
     
     # clean extra transforms under parent group
     parentGrpChilds = mc.listRelatives( parentGrp, c = True )
 
+def saveGameSkinClusterWeights( weightsPath, skinnedObjs = None ):
     
+    """
+    save skinCluster weights for game rig in custom folder
+    this fuction is for non-procedurally rigs or bought rigs
+    :param weightsPath: str, path to save out the weights
+    :param skinnedObjs: list( str ), list of skinned objects to save weights from
+    :retun None
+    """
+    
+    if not skinnedObjs:
+        
+        return
+    
+    skinPath = weightsPath+ '\\'
+    
+    # check if folder already exists or create it if needed
+    if not os.path.exists( skinPath ):
+        os.mkdir( skinPath )
+    
+    for geo in skinnedObjs:
+        
+        mc.select( geo )
+        
+        fullSkinPath = skinPath + geo + '.skinwt'
+        
+        bSkinSaver.bSaveSkinValues(fullSkinPath)
+        
+        print "for: %s \n" % geo
+    
+    mc.select(cl = True)       
+    
+def loadGameSkinClusterWeights( weightsPath ):
+    
+    """
+    load skinCluster weights for the game rig
+    this fuction is for non-procedurally rigs or bought rigs
+    :param weightsPath: str, path to load up the weights
+    """
+    
+    skinPath = weightsPath
+    
+    if not os.path.exists( skinPath ):
+        mc.error( '# {} path does not exists'.format( skinPath ) )
+    
+    if skinPath.endswith( '/' ) == 0: skinPath = skinPath + '/'
+    
+    dirFiles = os.listdir( skinPath )
+    weightFiles = [ skinPath + f for f in dirFiles if f.count( '.skinwt' ) ]
+
+    for i, wtFile in enumerate( weightFiles ):
+        try:
+            loadedGeo = bSkinSaver.bLoadSkinValues(loadOnSelection = False, inputFile = wtFile)
+            skinClusterName = mm.eval( 'findRelatedSkinCluster '+ loadedGeo )
+            
+            mc.rename( skinClusterName, loadedGeo + '_skc' )
+        
+        except:
+            '# not able to load {} ...skip'.format( wtFile )
+

@@ -563,7 +563,7 @@ def bSkinObject(objectName, joints, weights):
         vertexIter.next()
 
     #SET WEIGHTS 
-    print "setting weights for  ", objectName
+    print "setting weights for: %s" % objectName
     fnSkinCluster.setWeights(bSkinPath, vtxComponents, influenceIndices,weightDoubles, 0)
     #Maya.mel.eval("skinPercent -normalize true " + fnSkinCluster.name() + " " + objectName)
 

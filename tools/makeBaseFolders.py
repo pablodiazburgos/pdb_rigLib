@@ -78,6 +78,10 @@ class CreateFolders():
         initFile = '__init__.py'
         genericRigFile = 'rig.py'
         genericRigFileSource = genericRigFile
+        genericGameFile = 'rig_game.py'
+        
+        if rigType == 'game':
+            genericRigFileSource = genericGameFile
 
         rigModuleDir = '%sRig' % self.assetName
         rigModuleDestinationDir = os.path.join( parentDir, pythonScriptFolder )
