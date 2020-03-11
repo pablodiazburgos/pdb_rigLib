@@ -313,40 +313,52 @@ def setupDeformRig( assetName, baseRigData, loadSkinWeights ):
     stickyLipOffsetCrv = 'lips_line_offset_crv'
     
     #===========================================================================
+    # create game joints 
+    #===========================================================================
+    if createGameJoints:
+        loadGameJointsSetup( assetName, baseRigData )
+    
+    #===========================================================================
     #  bind geometry
     #===========================================================================
     
     if loadSkinWeights:
         
-        loadSkinClusterWeights( assetName )
-        
-        # load DQ skin weights
-        assetFolder = mainAssetFolder % assetName
-        weightsFolder = skinBlendWeightsFilePath % assetFolder
-        
-        try:
-            for file in os.listdir( weightsFolder ):
-                print 'file:', file
-                if file.endswith( '.wts' ):
-                    filePath = os.path.join( weightsFolder, file )
-                    
-                    # set skin to blend weights
-                    # read from file
-                    fileobj = open( filePath, mode = 'rb' )
-                    fileobjStr = fileobj.read()
-                    weightsDt = json.loads( fileobjStr )
-                    fileobj.close()
-                    
-                    deformerNode = weightsDt['deformerName']
-                    
-                    mc.setAttr( '{}.skinningMethod'.format( deformerNode ), 2 )
-                    mc.setAttr( '{}.deformUserNormals'.format( deformerNode ), 0 )
-                    
-                    saveSkinWeights.loadBlendWeights( filePath )
-                    
-        except:
+        if createGameJoints:
             
-            print '# no Dual Quaternion weights found... moving to next step'
+            loadGameSkinClusterWeights( assetName )
+        
+        else:
+            
+            loadSkinClusterWeights( assetName )
+            
+            # load DQ skin weights
+            assetFolder = mainAssetFolder % assetName
+            weightsFolder = skinBlendWeightsFilePath % assetFolder
+            
+            try:
+                for file in os.listdir( weightsFolder ):
+                    print 'file:', file
+                    if file.endswith( '.wts' ):
+                        filePath = os.path.join( weightsFolder, file )
+                        
+                        # set skin to blend weights
+                        # read from file
+                        fileobj = open( filePath, mode = 'rb' )
+                        fileobjStr = fileobj.read()
+                        weightsDt = json.loads( fileobjStr )
+                        fileobj.close()
+                        
+                        deformerNode = weightsDt['deformerName']
+                        
+                        mc.setAttr( '{}.skinningMethod'.format( deformerNode ), 2 )
+                        mc.setAttr( '{}.deformUserNormals'.format( deformerNode ), 0 )
+                        
+                        saveSkinWeights.loadBlendWeights( filePath )
+                        
+            except:
+                
+                print '# no Dual Quaternion weights found... moving to next step'
 
     
     #===========================================================================
@@ -582,6 +594,10 @@ def loadGameJointsSetup( assetName, baseRigData = None, gameJointsGroup = 'gameJ
     
     fullGameJoints = []
     
+    # creat boneRoot joint
+    boneRootJnt = mc.createNode( 'joint', n = 'game_boneRoot1_jnt', p = parentGrp )
+    fullGameJoints.append( boneRootJnt )
+    
     for jnt in gameJointsData.keys():
         
         # define some info from the json file
@@ -596,7 +612,7 @@ def loadGameJointsSetup( assetName, baseRigData = None, gameJointsGroup = 'gameJ
         fullGameJoints.append( gameJnt )
     
     #  parent game joint in proper hierarchy and constraint from driver joint
-    for gameJnt in fullGameJoints:
+    for gameJnt in gameJointsData.keys():
         
         jntParent = gameJointsData[ gameJnt ]['parent']
         jntDriver = gameJointsData[ gameJnt ]['driver']
@@ -604,7 +620,7 @@ def loadGameJointsSetup( assetName, baseRigData = None, gameJointsGroup = 'gameJ
         try:
             mc.parent( gameJnt, jntParent )
         except:
-            pass
+            mc.parent( gameJnt, boneRootJnt )
         
         mc.parentConstraint( jntDriver, gameJnt, mo = True )
         for axis in ['.sx', '.sy', '.sz']:
