@@ -30,6 +30,8 @@ sceneScale = 1.0
 rootJnt = 'root1_jnt'
 headJnt = 'head1_jnt'
 
+boneRootJntName = 'boneRoot1_jnt'
+
 bodyAssetGeo = 'C_head_00__MSH'  # this should be the name of the main body geo
 
 # ========================================================
@@ -117,8 +119,9 @@ def prepareModel( assetName, assetFolder, modelSource = 'CC', verbose = False ):
     # if there is some blendshapes group it an parent it
     if len( blendshapeGeo ) > 0: 
         mc.parent( blendshapeGeo, blsGrp )
-        mc.setAttr( '{}.rx'.format( blsGrp ), -90 )
-        mc.makeIdentity(blsGrp, apply = True, r = True, pn = True )
+        
+        #mc.setAttr( '{}.rx'.format( blsGrp ), -90 )
+        #mc.makeIdentity(blsGrp, apply = True, r = True, pn = True )
         
     mc.parent( skinnedGeo, assetGeoGrp )
     
@@ -273,7 +276,7 @@ def _CCFixJointNames( verbose ):
     allJntsList = mc.listRelatives( topJnt, ad = True )
     
     #rename top bone
-    mc.rename( topJnt, 'BoneRoot' )
+    mc.rename( topJnt, boneRootJntName )
     
     for j in allJntsList:
         

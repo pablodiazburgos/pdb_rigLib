@@ -284,7 +284,7 @@ def setupControlRig( assetName, baseRigData ):
     
     return [moduleMainGrps]
 
-def setupDeformRig( assetName, baseRigData, loadSkinWeights ):
+def setupDeformRig( assetName, baseRigData, loadSkinWeights, createGameJoints ):
     
     """
     setup deform rig
