@@ -216,11 +216,12 @@ def build(
     shoulderFkRotateConst = mc.listConnections( limbData['fkControls'][0].Off + '.rx', type = 'constraint' )[0]
     shoulderFkLocalConstTarget = mc.listConnections( shoulderFkRotateConst + '.target' )[0]  # this will return local target group
     
+    '''
     # lock FK shoulder translate channels
     for ax in ['x', 'y', 'z']:
         
         mc.setAttr( limbData['fkControls'][0].C + '.t' + ax, l = True, k = False )
-    
+    '''
     # IK
     # unlock IK shoulder rotate channels and lock translate ones so it won't brake fk setup
     for ax in ['x', 'y', 'z']:

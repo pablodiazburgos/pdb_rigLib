@@ -1105,6 +1105,10 @@ def build(
     # adjust default toggle control orientation shape
     shape.translateRotate( toggleCtrl.C, rot = [90, 0, 90], localSpace = True )
     
+    if isLeg:
+        shape.translateRotate( toggleCtrl.C, pos = [0, 0, 0], rot = [90, 0, 0], localSpace = True, relative = True )
+    
+    
     rotateToggleCtrlShape = None
     
     if isLeg and name.getSide( prefix ) == 'l':
@@ -1149,6 +1153,7 @@ def build(
     
     # connect FK controls to joints    
     mc.orientConstraint( upperFkCtrl.C, fkJointList[0] )
+    mc.pointConstraint( upperFkCtrl.C, fkJointList[0], mo = True )
     mc.connectAttr( upperFkCtrl.C + '.ro', fkJointList[0] + '.ro' )
     
     for c, j in zip( [ midFkCtrl, endFkCtrl ], [ fkJointList[1], fkJointList[2] ] ):

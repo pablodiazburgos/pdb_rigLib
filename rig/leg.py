@@ -437,8 +437,7 @@ def _buildFkFoot( prefix, fkJoints , rigmodule, ctrlScale ):
     mc.connectAttr( toeFkCtrl.C + '.ro', fkJoints[3] + '.ro' )
     
     return {'toeFkCtrl':toeFkCtrl}
-    
-    
+        
 def _buildIkFoot_old( prefix, doReverseFoot, limbIk1Ctrl, ikAttachGrp, ankleJnt, toeJnt, ctrlScale, limbIk, mainModuleGrp, heelLoc, tipLoc, outFootLoc, inFootLoc ):
     
     mainIkFootGrp = mc.group( n = prefix + 'MainIkFoot_grp', em = 1 )
@@ -531,7 +530,6 @@ def _buildIkFoot( prefix, doReverseFoot, limbIk1Ctrl, ikAttachGrp, ikJoints , ct
         'ballCtrl':revFootData['ballCtrl']
         }    
 
-
 def _buildReverseFoot( mainModuleGrp, limbIk1Ctrl, ikAttachGrp, prefix, ctrlScale, ankleJnt, toeJnt, toeEndJnt, limbIk, ankleIk, toeIk, tipIk, heelLoc, tipLoc, outFootLoc, inFootLoc ):
     
     '''
@@ -593,6 +591,12 @@ def _buildReverseFoot( mainModuleGrp, limbIk1Ctrl, ikAttachGrp, prefix, ctrlScal
     tipCtrl = None
     toeCtrl = control.Control( lockHideChannels = ['t'], prefix = prefix + 'ToeIk', moveTo = toeJnt, scale = ctrlScale * 1, ctrlParent = revGrps[4], colorName = 'secondary', shape = 'singleRotation' )
     ballCtrl = control.Control( lockHideChannels = ['t'], prefix = prefix + 'BallIk', moveTo = toeJnt, scale = ctrlScale * 2, ctrlParent = revGrps[5], colorName = 'secondary', shape = 'arrow' )
+    
+    # fix default orient for controls 
+    shape.translateRotate( toeCtrl.C, pos = [0, 0, 0], rot = [90, 0, 0], localSpace = True, relative = True )
+    shape.translateRotate( ballCtrl.C, pos = [0, 0, 0], rot = [-90, 0, 0], localSpace = True, relative = True )
+    shape.translateRotate( ballCtrl.C, pos = [0, 0, 0], rot = [0, 90, 0], localSpace = True, relative = True )
+
     
     #===========================================================================
     # parent objects

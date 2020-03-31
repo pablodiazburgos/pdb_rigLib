@@ -174,7 +174,7 @@ class DreamHouseToolBoxUI(QtWidgets.QDialog):
         # animation help buttons
         self.connectAnimHelpButtons = animHelpButtons.AnimHelpButtons( self.ui, self.statusBar )
         self.connectAnimHelpButtons.setConnections()
-        
+        '''
         #=======================================================================
         # help/suggestion button connections
         #=======================================================================
@@ -182,7 +182,7 @@ class DreamHouseToolBoxUI(QtWidgets.QDialog):
         self.ui.mayaCommands_btn.clicked.connect( self.mayaCommandsPage )
         
         #self.ui.extraWidget_tab.tabBarDoubleClicked.connect(self.toggleExtraTabVis)
-        
+        '''
     def suggestionPage(self):
         
         webbrowser.open(url = 'https://docs.google.com/document/d/1yt9jm5fx_xiEqJ1X6CY6mhyg7NUSujWs4K7WD2M7DR8/edit?usp=sharing', 
