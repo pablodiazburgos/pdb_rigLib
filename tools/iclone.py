@@ -363,6 +363,8 @@ def fixJointHierarchy(pelvis2YSubs = 14, toeExtendFactor = 2.0, headExtendFactor
     '''
     
     
+    boneRoot = 'boneRoot1_jnt'
+    
     # create joints builder group and top builder group in case they dont exists
     if not mc.objExists( buildObjectsGrp ):
         mc.group( em = True, w = True, n = buildObjectsGrp )
@@ -375,7 +377,7 @@ def fixJointHierarchy(pelvis2YSubs = 14, toeExtendFactor = 2.0, headExtendFactor
     mc.setAttr( '{}.radius'.format( rootJnt ), rootRadVal * 2)
     
     # freeze top hierarchy joint so will be possible to reparent items without creating transforms groups
-    boneRoot = 'BoneRoot'
+    
     mc.makeIdentity( boneRoot, apply = True )
     mc.parent( boneRoot, buildSkeletonGrp )
     
@@ -660,7 +662,7 @@ def createReferenceLocators():
         sideElbowJnt = side + elbowJnt
         sideHandJnt = side + handJnt
         
-        elbowPvPos = poleVector.findPoleVectorPosition( sideShldrJnt, sideElbowJnt, sideHandJnt, posOffset = 2 )
+        elbowPvPos = poleVector.findPoleVectorPosition( sideShldrJnt, sideElbowJnt, sideHandJnt, posOffset = 3 )
         
         armPv = mc.spaceLocator(n = side + 'armPoleVec_loc')[0]
         for axis in ['X', 'Y', 'Z']:
@@ -680,7 +682,7 @@ def createReferenceLocators():
         sideKneeJnt = side + kneeJnt
         sideFootJnt = side + ankleJnt           
     
-        kneePvPos = poleVector.findPoleVectorPosition( sideHipJnt, sideKneeJnt, sideFootJnt, posOffset = 5 )
+        kneePvPos = poleVector.findPoleVectorPosition( sideHipJnt, sideKneeJnt, sideFootJnt, posOffset = 3.5 )
         
         legPv = mc.spaceLocator(n = side + 'legPoleVec_loc')[0]
         for axis in ['X', 'Y', 'Z']:
@@ -699,6 +701,20 @@ def createReferenceLocators():
         footLocs = footRigLocators.build( side + ankleJnt, side + toeJnt, side + endToeJnt )
         mc.parent( footLocs, buildLocGrp )
         
+        # create hand orient locators
+        locName = side + 'handOrientRef_loc'
+        handOrientLoc = mc.spaceLocator( n = locName )[0]
+        
+        mc.parent( handOrientLoc, sideHandJnt )
+        for at in ['.t', '.r']:
+            for ax in ['x', 'y', 'z']:
+                mc.setAttr( handOrientLoc + at + ax, 0 )
+        
+        for axis in ['X', 'Y', 'Z']:
+            mc.setAttr( '{}Shape.localScale{}'.format( handOrientLoc, axis ), 4 )
+        
+        mc.parent( handOrientLoc, buildLocGrp )
+                               
 def _findToeEndPos( ankleJnt, toeJnt, extendFactor  ):
     
     '''
