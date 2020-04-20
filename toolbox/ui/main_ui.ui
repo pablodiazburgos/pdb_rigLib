@@ -38,7 +38,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>2</number>
      </property>
      <property name="tabsClosable">
       <bool>false</bool>
@@ -1178,8 +1178,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>408</width>
-            <height>499</height>
+            <width>391</width>
+            <height>512</height>
            </rect>
           </property>
           <property name="sizePolicy">
@@ -1296,6 +1296,136 @@
            </item>
            <item>
             <widget class="Line" name="line_5">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_29">
+             <property name="text">
+              <string>Retarget Anim</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_25">
+             <property name="spacing">
+              <number>5</number>
+             </property>
+             <item>
+              <layout class="QFormLayout" name="formLayout_21">
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_46">
+                 <property name="text">
+                  <string>Retarget Type</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QComboBox" name="animKeyOffsetTarget_cbx_3">
+                 <property name="maximumSize">
+                  <size>
+                   <width>1000</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>IcloneToDhs</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>MixamoToDhs</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="Line" name="line_24">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QFormLayout" name="formLayout_22">
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_47">
+                 <property name="text">
+                  <string>Target Controls</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QComboBox" name="animKeyOffsetTarget_cbx_4">
+                 <property name="maximumSize">
+                  <size>
+                   <width>1000</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>Fk</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Ik</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_9">
+             <item>
+              <widget class="QLabel" name="label_45">
+               <property name="text">
+                <string>DriverNameSpace:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="animSavePath_lne_3"/>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_11">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_49">
+               <property name="text">
+                <string>DrivenNameSpace:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="animSavePath_lne_4"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="Line" name="line_14">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>

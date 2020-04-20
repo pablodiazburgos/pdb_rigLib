@@ -577,7 +577,7 @@ def loadGameJointsSetup( assetName, baseRigData = None, gameJointsGroup = 'gameJ
     # create game joints group
     parentGrp = gameJointsGroup
     if not mc.objExists( gameJointsGroup ):
-        parentGrp = mc.group( em = True, n = gameJointsGroup, p = baseRigData['global2Ctrl'].C )
+        parentGrp = mc.group( em = True, n = gameJointsGroup, p = baseRigData['mainGrp'] )
     
     # connect game joints visibility
     visCtrl = baseRigData['visCtrl'].C

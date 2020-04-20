@@ -579,8 +579,8 @@ def fixCCJointsOrient():
     # fix spine and head orient
     spineToHeadList = joint.listChainStartToEnd( spineStartJnt, headEndJnt )
     
-    # reorder headEnd joint to be the aimTgt for head
-    mc.reorder( headEndJnt, r = -1 )
+    # put head joint in fron of sibling list so head1_jnt can be orient properly
+    mc.reorder( headEndJnt, f = True )
     
     joint.orient( jointsList = spineToHeadList, 
                   aimAxis = [1, 0, 0], 

@@ -247,10 +247,14 @@ def buildHybrid(
     # create Ik controls
     startIkCtrl = control.Control( prefix = prefix + 'StartIk1', translateTo = spineJntsChain[0], rotateTo = spineJntsChain[0], scale = 5 * ctrlScale, shape = 'circle', ctrlParent = rigmodule.Controls, colorName = 'green' )
     endIkCtrl = control.Control( prefix = prefix + 'EndIk1', translateTo = spineJntsChain[-1], rotateTo = spineJntsChain[-1], scale = 5 * ctrlScale, shape = 'circle', ctrlParent = rigmodule.Controls, colorName = 'green' )
-     
+    chestCtrl = control.Control( prefix = prefix + 'Chest1', translateTo = spineJntsChain[-1], rotateTo = spineJntsChain[-1], scale = 5 * ctrlScale, shape = 'triangle', ctrlParent = rigmodule.Controls, colorName = 'green' )
+    
+    mc.parent( chestCtrl.Off, endIkCtrl.C )
+    
     mc.parentConstraint( startIkCtrl.C, startIkDrvJnt, mo = True )
     mc.parentConstraint( endIkCtrl.C, endIkDrvJnt, mo = True )
-    mc.orientConstraint( endIkCtrl.C, spineJntsChain[-1], mo = True )
+    
+    mc.orientConstraint( chestCtrl.C, spineJntsChain[-1], mo = True )
     
     # create skin from driver joints
     mc.parent( ikCurve, rigmodule.PartsNt )

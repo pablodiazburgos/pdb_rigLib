@@ -394,3 +394,16 @@ def moveSimple(scale = [1, 1, 1]):
     shape.scale( new, scale )
     
     return new
+
+def triangle( scale = [1, 1, 1] ):
+    
+    pos = []
+    pos.append( ( 0.5, 0, 0 ) )
+    pos.append( ( -0.5, 0, 0 ) )
+    pos.append( ( 0, 1, 0 ) )
+    pos.append( ( 0.5, 0, 0 ) )
+    
+    new = mc.curve( d = 1, p = pos )
+    shape.scale( new, scale )
+    
+    return new
