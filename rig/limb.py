@@ -1056,7 +1056,9 @@ def build(
             flatWorldXZ = False,
             buildTwistJoints = True,
             twistJointsNumber = 5,
-            stretch = True
+            stretch = True,
+            snappablePv = True,
+            bendy = True
             ):
     """
     :param upperJnt: str, upper joint
@@ -1070,8 +1072,10 @@ def build(
     :param endOrientRefObject: str, optional, reference object for end IK control orientation
     :param flatWorldXZ: str, orienting IK control based on end joint X aiming, useful for foot controls in leg module
     :param buildTwistJoints: bool, create twist joints setup
-    :param twistJointsNumber: int, number of joints is going to be create by twist setup
+    :param twistJointsNumber: int, number of joints is going to be create by twist setup( min number to create is 3, in case less number is passed will be 3 anyway)
     :param stretch: bool, create stretch setup ( it works with or without twist setup )
+    :param snappablePv: bool, create a setup to snap the limb to the pole vector( stretch setup must be true )
+    :param bendy: bool, create bend setup ( stretch and twist joints must be true )
     :return dictionary of multiple items from module
     """
     
@@ -1083,7 +1087,8 @@ def build(
     rigmodule.connect( baseRigData = baseRigData )    
     
     fkJoints, ikJoints = _createFkIkDuplicateChains(rigmodule, upperJnt, midJnt, endJnt)
-    
+    bindJoints = [ upperJnt, midJnt, endJnt ]
+
     # get some initial values about the joints
     upperJntRot = mc.getAttr( upperJnt + '.r' )[0]
     midJntRot = mc.getAttr( midJnt + '.r' )[0]
@@ -1291,7 +1296,7 @@ def build(
     # stretch setup
     #===========================================================================
     if stretch:
-        _addIkStretchSetup( rigmodule, prefix, ikJoints, ik1Ctrl, upperJnt, twistData, toggleCtrl )
+        _addIkStretchSetup( rigmodule, prefix, ikJoints, ik1Ctrl, upperJnt, twistData, toggleCtrl, snappablePv, ikPvCtrl, bendy, bindJoints )
     
     
     return {
@@ -1363,7 +1368,7 @@ def _connectIkFkJoints( bindJnts, fkJoints, ikJoints, rigmodule ):
         rigmodule.connectIkFk( '{}.{}'.format( constraintName, constraintAttr[1] ) )
         rigmodule.connectIkFk( '{}.{}'.format( constraintName, constraintAttr[0] ), reversed = True )
 
-def _addIkStretchSetup( rigmodule, prefix, ikJoints, ik1Ctrl, upperJnt, twistData, toggleCtrl ):
+def _addIkStretchSetup( rigmodule, prefix, ikJoints, ik1Ctrl, upperJnt, twistData, toggleCtrl, snappablePv, ikPvCtrl, bendy, bindJoints ):
     
     '''
     Add ik stretch setup
@@ -1430,12 +1435,22 @@ def _addIkStretchSetup( rigmodule, prefix, ikJoints, ik1Ctrl, upperJnt, twistDat
     mc.connectAttr( stretchManualOutPlug, stretchUpperMdl + '.input2' )
     stretchUpperOutPlug = stretchUpperMdl + '.output'
     
+    if snappablePv:
+        txVal = mc.getAttr( ikJoints[1] + '.tx' )
+        stretchUpperOutPlug = _snappablePvSetup(rigmodule, prefix + 'Upper', ikPvCtrl, txVal, stretchOutPlug = stretchUpperOutPlug, distanceBase = startLoc )
+    
+    
     # create lower stretch multiplier
     stretchLowerMdl = mc.createNode( 'multDoubleLinear', n = prefix + 'StretchLower_mdl' )
     mc.connectAttr( ik1Ctrl.C + '.stretchLower', stretchLowerMdl + '.input1' )
     mc.connectAttr( stretchManualOutPlug, stretchLowerMdl + '.input2' )
     stretchLowerOutPlug = stretchLowerMdl + '.output'
+
+    if snappablePv:
+        txVal = mc.getAttr( ikJoints[2] + '.tx' )
+        stretchLowerOutPlug = _snappablePvSetup(rigmodule, prefix + 'Lower', ikPvCtrl, txVal, stretchOutPlug = stretchLowerOutPlug, distanceBase = ik1Ctrl.C )
     
+
     # connect upper stretch to ik joint
     upperPrefix = name.removeSuffix( ikJoints[1] )
     txVal = mc.getAttr( ikJoints[1] + '.tx' )
@@ -1457,7 +1472,7 @@ def _addIkStretchSetup( rigmodule, prefix, ikJoints, ik1Ctrl, upperJnt, twistDat
     mc.connectAttr( stretchLowerJntOutPlug, ikJoints[2] + '.tx' )
     
     if twistData:
-        _stretchTwistJoints( prefix, twistData, ik1Ctrl, stretchUpperOutPlug, stretchLowerOutPlug, toggleCtrl )
+        _stretchTwistJoints( rigmodule, prefix, twistData, ik1Ctrl, stretchUpperOutPlug, stretchLowerOutPlug, toggleCtrl, bendy, bindJoints )
     
 def _addIkStretchAttributes( ik1Ctrl ):
     
@@ -1501,7 +1516,7 @@ def _twistSetup( prefix, twistJointsNumber, upperJnt, midJnt, endJnt, rigmodule 
     
     return twistJointsDataList 
 
-def _stretchTwistJoints( prefix, twistData, ik1Ctrl, stretchUpperOutPlug, stretchLowerOutPlug, toggleCtrl ):
+def _stretchTwistJoints( rigmodule, prefix, twistData, ik1Ctrl, stretchUpperOutPlug, stretchLowerOutPlug, toggleCtrl, bendy, bindJoints ):
     
     '''
     add stretch setup to twist joints
@@ -1509,6 +1524,7 @@ def _stretchTwistJoints( prefix, twistData, ik1Ctrl, stretchUpperOutPlug, stretc
     
     posPrefixList = [ 'Upper', 'Lower' ]
     i = 0
+    endJntIdx = 1
     
     for posPrefix, stretchOutPlug in zip( posPrefixList, [ stretchUpperOutPlug, stretchLowerOutPlug ] ):
         
@@ -1529,7 +1545,7 @@ def _stretchTwistJoints( prefix, twistData, ik1Ctrl, stretchUpperOutPlug, stretc
         stretchTwistOutPlug = stretchTwistMdl + '.output'
         
         # squash setup
-        squashTwistMdv = mc.createNode( 'multiplyDivide', n = prefix + 'Squash{}Twist_mdl'.format( posPrefix ) )
+        squashTwistMdv = mc.createNode( 'multiplyDivide', n = prefix + 'Squash{}Twist_mdv'.format( posPrefix ) )
         mc.setAttr( squashTwistMdv + '.operation', 2 ) # divide operation
         mc.setAttr( squashTwistMdv + '.input1X', 1 )
         mc.connectAttr( stretchTwistSwitchOutPlug, squashTwistMdv + '.input2X' )
@@ -1555,11 +1571,171 @@ def _stretchTwistJoints( prefix, twistData, ik1Ctrl, stretchUpperOutPlug, stretc
             mc.connectAttr( squashTwistSwitchOutPlug, twistJnt + '.sy' )
             mc.connectAttr( squashTwistSwitchOutPlug, twistJnt + '.sz' )
         
+        if bendy:
+            _bendySetup( rigmodule, prefix, posPrefix, TwistJoints = twistData[i]['twistjoints'], startJnt = bindJoints[i], endJnt = bindJoints[endJntIdx], stretchTwistMdl = stretchTwistMdl, squashTwistMdv = squashTwistMdv )
+        
+        endJntIdx += 1
         i += 1
         
+def _snappablePvSetup(rigmodule, prefix, ikPvCtrl, txVal, stretchOutPlug = None, distanceBase = None ):
+    
+    # create ik snap attribute
+    snapAt = 'pvSnap'
+    moduleScaleOutPlug = rigmodule.Main + '.moduleScale'
+    
+    # check if the pv snap already exists
+    if not mc.attributeQuery( snapAt, node = ikPvCtrl.C, exists = True):
+        
+        attribute.addSection( ikPvCtrl.C, sectionName = 'Settings'  )
+        mc.addAttr( ikPvCtrl.C, ln = snapAt, at = 'float', k = True, min = 0, max = 1, dv = 0 )
+    
+    # create distance between base obj and pole vector
+    snapDis = mc.createNode( 'distanceBetween', n = prefix + 'SnapDistance_dis' )
+    mc.connectAttr( distanceBase + '.worldMatrix[0]', snapDis + '.inMatrix1' )
+    mc.connectAttr( ikPvCtrl.C + '.worldMatrix[0]', snapDis + '.inMatrix2' )
+    snapDisOutPlug = snapDis + '.distance'
 
+    # create scale compensation for default distance
+    pvScaleCompMdl = mc.createNode( 'multDoubleLinear', n = prefix + 'PvScaleComp_mdl' )
+    mc.setAttr( pvScaleCompMdl + '.input1', abs( txVal ) )
+    mc.connectAttr( moduleScaleOutPlug, pvScaleCompMdl + '.input2' )
+    pvScaleCompOutPlug = pvScaleCompMdl + '.output'
+    
+
+    # create stretch ratio for pv snap
+    pvStretchRatioMdv = mc.createNode( 'multiplyDivide', n = prefix + 'PvSnapStretchRatio_mdv' )
+    mc.setAttr( pvStretchRatioMdv + '.operation', 2 ) # divide operation
+    mc.connectAttr( snapDisOutPlug, pvStretchRatioMdv + '.input1X' )
+    mc.connectAttr( pvScaleCompOutPlug, pvStretchRatioMdv + '.input2X' )
+    pvStretchRatioOutPlug = pvStretchRatioMdv + '.outputX'    
+
+    # create blend2Attrs node for snap pv switch  
+    pvStretchSwitchBta = mc.createNode( 'blendTwoAttr', n = prefix + 'PvSnapStretchSwitch_bta' )
+    mc.connectAttr( ikPvCtrl.C + '.%s' % snapAt, pvStretchSwitchBta + '.attributesBlender' )
+    mc.connectAttr( stretchOutPlug, pvStretchSwitchBta + '.input[0]' )
+    mc.connectAttr( pvStretchRatioOutPlug, pvStretchSwitchBta + '.input[1]' )
+    pvStretchSwitchOutPlug = pvStretchSwitchBta + '.output'
+    
+    return pvStretchSwitchOutPlug
+
+def _bendySetup( rigmodule, prefix, posPrefix, TwistJoints, startJnt, endJnt, stretchTwistMdl, squashTwistMdv ):
+    
+    bendyPrefix = prefix + posPrefix + 'Bendy' 
+    
+    # duplicate and parent bendy joints 
+    bendyJnts = joint.duplicateChain( jointlist = TwistJoints, newjointnames = [], prefix = bendyPrefix, suffix = '', keepOrigName = False, inverseScale = True, removeUserAts = True )
+    mc.parent( bendyJnts[0], rigmodule.Joints )
+    mc.hide( bendyJnts[0] )
+    
+    # create bendy curve
+    bendyCrv = curve.from2objects( objectA = TwistJoints[0], objectB = TwistJoints[-1], prefix = bendyPrefix, spans = 1, degree = 2 )
+    mc.parent( bendyCrv, rigmodule.PartsNt )
+    
+    # create ik spline
+    bendyIk = mc.ikHandle( n = bendyPrefix + '_ikh', sol = 'ikSplineSolver', sj = bendyJnts[0], ee = bendyJnts[-1], c = bendyCrv, ccv = 0, parentCurve = 0 )[0]
+    mc.parent( bendyIk, rigmodule.PartsNt )
+    mc.hide( bendyIk )
+    
+    # create ref locs
+    refLocGrp = mc.group(em = True, n = bendyPrefix + 'RefLocs_grp', p = rigmodule.Parts )
+    
+    refLocList = []    
+    
+    for i in range(3):
+        locIdx = i + 1
+        xformPos = mc.xform( bendyCrv + '.cv[{}]'.format( i ), q = True, ws = True, t = True )
+        refLoc = mc.spaceLocator( n = bendyPrefix + 'Ref{}_loc'.format( locIdx ) )[0]
+        mc.xform( refLoc, ws = True, t = ( xformPos[0], xformPos[1], xformPos[2] ) )
+        mc.parent( refLoc, refLocGrp )
+        transform.makeOffsetGrp( refLoc )
         
+        refLocList.append( refLoc )
         
+    # create control for mid locator
+    bendyCtrl = control.Control( lockHideChannels = ['r'], prefix = bendyPrefix, translateTo = refLocList[1], scale = 5 , shape = 'circle', ctrlParent = rigmodule.Controls )
+    mc.pointConstraint( refLocList[1], bendyCtrl.Off, mo = True )
+    mc.orientConstraint( startJnt, bendyCtrl.Off )
+    
+    for i, driver in enumerate( [ refLocList[0], bendyCtrl.C, refLocList[2] ] ):
         
+        locIdx = i + 1
+        # create clusters per cv and drive them with ref loc
+        mc.cluster( bendyCrv + '.cv[{}]'.format(i), n = bendyPrefix + '{}_cls'.format( locIdx ), wn = (driver, driver), bs = True )
+
+    # connect start and end bind joints to drive the ref locs  
+    i = 1
+    for refLoc, jnt in zip ( [ refLocList[0], refLocList[2] ], [ startJnt, endJnt ] ):
+        multMatrixNode = mc.createNode( 'multMatrix', n = bendyPrefix + '{}_mmx'.format( i ))
+        decomMatrixNode = mc.createNode( 'decomposeMatrix', n = bendyPrefix + '{}_dcm'.format( i ))
+        
+        mc.connectAttr( jnt + '.worldMatrix[0]',  multMatrixNode + '.matrixIn[0]' )
+        mc.connectAttr( refLoc + '.parentInverseMatrix[0]',  multMatrixNode + '.matrixIn[1]' )
+        
+        mc.connectAttr( multMatrixNode + '.matrixSum', decomMatrixNode + '.inputMatrix'  )
+        mc.connectAttr( decomMatrixNode + '.outputTranslate', refLoc + '.translate'  )
+        
+        i += 2
+    
+    # create the blend connection between start and end joints for middle locator
+    wtAddMatrixNode = mc.createNode( 'wtAddMatrix', n = bendyPrefix + '2_wam')
+    multMatrixNode = mc.createNode( 'multMatrix', n = bendyPrefix + '2_mmx')
+    decomMatrixNode = mc.createNode( 'decomposeMatrix', n = bendyPrefix + '2_dcm')
+    
+    mc.connectAttr( startJnt + '.worldMatrix[0]',  wtAddMatrixNode + '.wtMatrix[0].matrixIn' )
+    mc.setAttr( wtAddMatrixNode + '.wtMatrix[0].weightIn', 0.5 )
+    
+    mc.connectAttr( endJnt + '.worldMatrix[0]',  wtAddMatrixNode + '.wtMatrix[1].matrixIn' )
+    mc.setAttr( wtAddMatrixNode + '.wtMatrix[1].weightIn', 0.5 )
+    
+    mc.connectAttr( wtAddMatrixNode + '.matrixSum',  multMatrixNode + '.matrixIn[0]' )
+    mc.connectAttr( refLocList[1] + '.parentInverseMatrix[0]',  multMatrixNode + '.matrixIn[1]' ) 
+    
+    mc.connectAttr( multMatrixNode + '.matrixSum', decomMatrixNode + '.inputMatrix'  )
+    mc.connectAttr( decomMatrixNode + '.outputTranslate', refLocList[1] + '.translate'  )
+    
+    # disconnect translateX attr for twistJoints(now will be driven by bendy joints)
+    for jnt in TwistJoints:
+        connect.disconnect(jnt + '.tx', source = True)
+    
+    # create curve info node to get arc length
+    bendyCrvShp = mc.listRelatives( bendyCrv, s = True )[0]
+    curveInfoNode = mc.createNode( 'curveInfo', n = bendyPrefix + '_cvi' )
+    mc.connectAttr( bendyCrvShp + '.worldSpace[0]', curveInfoNode + '.inputCurve' )
+    curveLen = mc.getAttr( curveInfoNode + '.arcLength' )
+    
+    # create scale compensate 
+    bendyScaleCompMdl = mc.createNode( 'multDoubleLinear', n = bendyPrefix + '{}ScaleComp_mdl' )
+    mc.setAttr( bendyScaleCompMdl + '.input1', curveLen )
+    mc.connectAttr( rigmodule.getModuleScalePlug() , bendyScaleCompMdl + '.input2' )
+    
+    # create stretch compensation for bendy joints
+    stretchBendyMdv = mc.createNode( 'multiplyDivide', n = bendyPrefix + '{}StretchRatio_mdv' )
+    mc.setAttr( stretchBendyMdv + '.operation', 2 ) # divide operation
+    mc.connectAttr( curveInfoNode + '.arcLength', stretchBendyMdv + '.input1X' )
+    mc.connectAttr( bendyScaleCompMdl + '.output', stretchBendyMdv + '.input2X' )
+    
+    # connect bendy squash and stretch to twist setup
+    connect.disconnect( squashTwistMdv + '.input2X', source = True )
+    mc.connectAttr( stretchBendyMdv + '.outputX', squashTwistMdv + '.input2X' )
+    
+    connect.disconnect( stretchTwistMdl + '.input2', source = True )
+    mc.connectAttr( stretchBendyMdv + '.outputX', stretchTwistMdl + '.input2' )
+    
+    for jnt in bendyJnts[1:]:
+        mc.connectAttr( stretchTwistMdl + '.output', jnt + '.tx' )
+    
+    # connect bendy joints to twist joints
+    for bendyJnt, twistJnt in zip( bendyJnts, TwistJoints ):
+        mc.pointConstraint( bendyJnt, twistJnt, mo = True )
+        mc.orientConstraint( bendyJnt, twistJnt, mo = True, sk = ['x'] )
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
