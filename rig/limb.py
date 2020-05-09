@@ -917,7 +917,7 @@ def _buildSnapSetup( rigmodule, prefix, toggleCtrl, upperJnt, midJnt, endJnt, up
     # create messsage attributes so fkik script will know what to take
     _createMessageAttributes( prefix, toggleCtrl, upperJnt, midJnt, endJnt, upperFkCtrl, midFkCtrl, endFkCtrl, ik1Ctrl, ikPvCtrl, limbIk, drivenIkJnts, drivenFkJnts )
     
-def _createMessageAttributes( prefix, toggleCtrl, upperJnt, midJnt, endJnt, upperFkCtrl, midFkCtrl, endFkCtrl, ik1Ctrl, ikPvCtrl, limbIk, drivenIkJnts, drivenFkJnts ):
+def _createMessageAttributesOld( prefix, toggleCtrl, upperJnt, midJnt, endJnt, upperFkCtrl, midFkCtrl, endFkCtrl, ik1Ctrl, ikPvCtrl, limbIk, drivenIkJnts, drivenFkJnts ):
     
     '''
     create message attributes to later access to multiple info no matter name changes eg: ik-fk snap
@@ -991,58 +991,6 @@ def _createMessageAttributes( prefix, toggleCtrl, upperJnt, midJnt, endJnt, uppe
     mc.addAttr( toggleCtrl, ln = 'snapLoc', at = 'message' )
     mc.connectAttr( snapRefLoc + '.message', toggleCtrl + '.snapLoc' )   
     
-def old_createMessageAttributes( prefix, toggleCtrl, upperJnt, midJnt, endJnt, upperFkCtrl, midFkCtrl, endFkCtrl, ik1Ctrl, ikPvCtrl, limbIk ):
-    
-    '''
-    create message attributes to later access to multiple info no matter name changes eg: ik-fk snap
-    '''
-    # add an attribute to make toggle control to make it valid for fk-ik snap
-    mc.addAttr( toggleCtrl, ln = 'fkIkSnapable', dt = 'string' )
-    
-    #===========================================================================
-    # add respective message attributes with connections
-    #===========================================================================
-    # limb joints
-    mc.addAttr( toggleCtrl, ln = 'upperJnt', at = 'message' )
-    mc.connectAttr( upperJnt + '.message', toggleCtrl + '.upperJnt' )
-    
-    mc.addAttr( toggleCtrl, ln = 'midJnt', at = 'message' )
-    mc.connectAttr( midJnt + '.message', toggleCtrl + '.midJnt' )
-    
-    mc.addAttr( toggleCtrl, ln = 'endJnt', at = 'message' )
-    mc.connectAttr( endJnt + '.message', toggleCtrl + '.endJnt' )
-    
-    # fk controls
-    mc.addAttr( toggleCtrl, ln = 'upperFkControl', at = 'message' )
-    mc.connectAttr( upperFkCtrl + '.message', toggleCtrl + '.upperFkControl' )
-    
-    mc.addAttr( toggleCtrl, ln = 'midFkControl', at = 'message' )
-    mc.connectAttr( midFkCtrl + '.message', toggleCtrl + '.midFkControl' )
-    
-    mc.addAttr( toggleCtrl, ln = 'endFkControl', at = 'message' )
-    mc.connectAttr( endFkCtrl + '.message', toggleCtrl + '.endFkControl' )    
-    
-    # ik controls
-    mc.addAttr( toggleCtrl, ln = 'ikControl', at = 'message' )
-    mc.connectAttr( ik1Ctrl + '.message', toggleCtrl + '.ikControl' )
-    
-    mc.addAttr( toggleCtrl, ln = 'pvControl', at = 'message' )
-    mc.connectAttr( ikPvCtrl + '.message', toggleCtrl + '.pvControl' )
-    
-    mc.addAttr( toggleCtrl, ln = 'limbIk', at = 'message' )
-    mc.connectAttr( limbIk + '.message', toggleCtrl + '.limbIk' )
-    
-    snapRefLoc = transform.makeGroup( prefix = prefix + 'SnapRef', 
-                                      referenceObj = ik1Ctrl, 
-                                      parentObj = endFkCtrl, 
-                                      matchPositionOnly = False, 
-                                      makeLocator = True )
-    
-    snapOffGrp = transform.makeOffsetGrp( snapRefLoc )
-    mc.hide( snapOffGrp )
-    mc.addAttr( toggleCtrl.C, ln = 'snapLoc', at = 'message' )
-    mc.connectAttr( snapRefLoc + '.message', toggleCtrl.C + '.snapLoc' )    
-
 def build(
             upperJnt,
             midJnt,
@@ -1298,6 +1246,9 @@ def build(
     if stretch:
         _addIkStretchSetup( rigmodule, prefix, ikJoints, ik1Ctrl, upperJnt, twistData, toggleCtrl, snappablePv, ikPvCtrl, bendy, bindJoints )
     
+    
+    # create messagge attribute for ik - fk snap
+    _createMessageAttributes( prefix, toggleCtrl, bindJnts, ikJoints, fkJoints, ik1Ctrl, ikPvCtrl, upperFkCtrl, midFkCtrl, endFkCtrl )
     
     return {
     'module':rigmodule,
@@ -1729,10 +1680,65 @@ def _bendySetup( rigmodule, prefix, posPrefix, TwistJoints, startJnt, endJnt, st
         mc.pointConstraint( bendyJnt, twistJnt, mo = True )
         mc.orientConstraint( bendyJnt, twistJnt, mo = True, sk = ['x'] )
     
+def _createMessageAttributes( prefix, toggleCtrl, bindJnts, ikJoints, fkJoints, ik1Ctrl, ikPvCtrl, upperFkCtrl, midFkCtrl, endFkCtrl ):
     
+    '''
+    create message attributes to later access to multiple info no matter name changes eg: ik-fk snap
+    '''
+    # add an attribute to make toggle control to make it valid for fk-ik snap
+    mc.addAttr( toggleCtrl.C, ln = 'fkIkSnapable', dt = 'string' )
+    mc.setAttr( toggleCtrl.C + '.fkIkSnapable', l = True )
     
+    #===========================================================================
+    # add respective message attributes with connections
+    #===========================================================================
     
+    # Fk joints
+    mc.addAttr( toggleCtrl.C, ln = 'upperFkJnt', at = 'message' )
+    mc.connectAttr( fkJoints[0] + '.message', toggleCtrl.C + '.upperFkJnt' )
     
+    mc.addAttr( toggleCtrl.C, ln = 'midFkJnt', at = 'message' )
+    mc.connectAttr( fkJoints[1] + '.message', toggleCtrl.C + '.midFkJnt' )
+    
+    mc.addAttr( toggleCtrl.C, ln = 'endFkJnt', at = 'message' )
+    mc.connectAttr( fkJoints[2] + '.message', toggleCtrl.C + '.endFkJnt' )
+    
+    # Fk controls
+    mc.addAttr( toggleCtrl.C, ln = 'upperFkControl', at = 'message' )
+    mc.connectAttr( upperFkCtrl.C + '.message', toggleCtrl.C + '.upperFkControl' )   
+    
+    mc.addAttr( toggleCtrl.C, ln = 'midFkControl', at = 'message' )
+    mc.connectAttr( midFkCtrl.C + '.message', toggleCtrl.C + '.midFkControl' )   
+    
+    mc.addAttr( toggleCtrl.C, ln = 'endFkControl', at = 'message' )
+    mc.connectAttr( endFkCtrl.C + '.message', toggleCtrl.C + '.endFkControl' )    
+    
+    # Ik joints
+    mc.addAttr( toggleCtrl.C, ln = 'upperIkJnt', at = 'message' )
+    mc.connectAttr( ikJoints[0] + '.message', toggleCtrl.C + '.upperIkJnt' )    
+    
+    mc.addAttr( toggleCtrl.C, ln = 'midIkJnt', at = 'message' )
+    mc.connectAttr( ikJoints[1] + '.message', toggleCtrl.C + '.midIkJnt' )  
+    
+    mc.addAttr( toggleCtrl.C, ln = 'endIkJnt', at = 'message' )
+    mc.connectAttr( ikJoints[2] + '.message', toggleCtrl.C + '.endIkJnt' )  
+    
+    # Ik controls
+    mc.addAttr( toggleCtrl.C, ln = 'ikControl', at = 'message' )
+    mc.connectAttr( ik1Ctrl.C + '.message', toggleCtrl.C + '.ikControl' )    
+    
+    mc.addAttr( toggleCtrl.C, ln = 'ikPvControl', at = 'message' )
+    mc.connectAttr( ikPvCtrl.C + '.message', toggleCtrl.C + '.ikPvControl' )  
+        
+    snapRefLoc = mc.spaceLocator( n = prefix + 'snapRef_loc')[0]
+    mc.parent( snapRefLoc, fkJoints[2] )
+    mc.hide( snapRefLoc )
+    mc.delete( mc.parentConstraint( ik1Ctrl.C, snapRefLoc ) )
+    
+    mc.addAttr( toggleCtrl.C, ln = 'snapLoc', at = 'message' )
+    mc.connectAttr( snapRefLoc + '.message', toggleCtrl.C + '.snapLoc' )       
+    
+
     
     
     

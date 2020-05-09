@@ -7,7 +7,7 @@ import bSkinSaver
 import transformWrapper
 import poleVector
 import footRigLocators
-import fkIkSnap
+import ikFkSnap
 import mirrorCvPositions
 import vectorTrigger
 import gameTools

@@ -97,9 +97,7 @@ class DreamHouseToolBoxUI(QtWidgets.QDialog):
         #self.helpQTab =  self.ui.extraWidget_tab.help_tab
         #self.ui.extraWidget_tab.hide()
         #self.ui.extraWidget_tab.addTab()
-        
-        
-        
+                        
     def init_ui(self):
         
         f = QtCore.QFile(packagePath + "\\ui\\main_ui.ui")
@@ -183,6 +181,7 @@ class DreamHouseToolBoxUI(QtWidgets.QDialog):
         
         #self.ui.extraWidget_tab.tabBarDoubleClicked.connect(self.toggleExtraTabVis)
         '''
+
     def suggestionPage(self):
         
         webbrowser.open(url = 'https://docs.google.com/document/d/1yt9jm5fx_xiEqJ1X6CY6mhyg7NUSujWs4K7WD2M7DR8/edit?usp=sharing', 
