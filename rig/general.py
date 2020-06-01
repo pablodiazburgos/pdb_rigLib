@@ -242,6 +242,4 @@ def smartFkControlChain(
                 mc.connectAttr( ctrl.C + axis, jnt + axis )
             mc.connectAttr( ctrl.C + '.ro', jnt + '.ro' )
     
-    return  ctrlsList
-    
-         
+    return [controlsGrp, ctrlsList]

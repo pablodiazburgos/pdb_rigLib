@@ -5,6 +5,7 @@ module for tails, tentacles , aerial kind of stuffs
 #TODO: deep study of spine module
 
 import maya.cmds as mc
+import pymel.core as pm
 
 from ..utils import constraint
 from ..utils import joint
@@ -16,6 +17,7 @@ from ..utils import name
 from ..utils import matrix
 from ..utils import anim
 from ..utils import connect
+from ..utils import shape
 
 from ..base import module
 from ..base import control
@@ -270,10 +272,9 @@ def build(
         mc.cluster( curveCvs[i], n = prefix + 'CurveCv%d_cls' % ( i + 1 ), wn = ( tailIkControls[i - 1].C, tailIkControls[i - 1].C ), bs = 1 )
     
     # build sub controls
-    
     subCurve = _makeCurveForSubControls( prefix, ikBaseCurve, curveCvs )
     subCurveCvs = mc.ls( subCurve + '.cv[*]', fl = 1 )
-    tailIkSubControls = _makeTailIkSubControls( rootCtrl, subCurveCvs, prefix, ctrlScale, rigmodule )
+    tailIkSubControls = old_makeTailIkSubControls( rootCtrl, subCurveCvs, prefix, ctrlScale, rigmodule )
     _attachControlsToCurve( tailIkSubControls, ikBaseCurve, rigmodule )
     
     # bind curve to controls
@@ -439,7 +440,6 @@ def _makeCurveForSubControls( prefix, ikBaseCurve, curveCvs ):
     subCurveCvs = mc.ls( subCurve + '.cv[*]', fl = 1 )
     
     # move CVs to mid positions
-    
     subCurveCVpositions = []
     
     for i in range( len( subCurveCvs ) ):
@@ -467,7 +467,7 @@ def _makeCurveForSubControls( prefix, ikBaseCurve, curveCvs ):
     
     return subCurve
 
-def _makeTailIkSubControls( rootCtrl, cvs, prefix, scale, rigmodule ):
+def old_makeTailIkSubControls( rootCtrl, cvs, prefix, scale, rigmodule ):
     
     '''
     make sub IK controls
@@ -507,6 +507,51 @@ def _makeTailIkSubControls( rootCtrl, cvs, prefix, scale, rigmodule ):
         conline = curve.makeConnectionLine( ctrlA.C, ikControls[i].C, prefix = '%sIkSubCtrlConLine%d' % ( prefix, ( i + 1 ) ) )
         mc.parent( conline, conlineGrp )
         
+    return ikControls
+
+def _makeTailIkSubControls( toggleCtrl, cvs, prefix, scale, rigmodule ):
+    
+    '''
+    make sub IK controls
+    '''
+    
+    # make controls
+    
+    controlsPartGrp = mc.group( n = prefix + 'SubControls_grp', em = 1, p = rigmodule.Controls )
+    secondaryVisCtrlAt = 'subControlsVis'
+    mc.addAttr( toggleCtrl.C, ln = secondaryVisCtrlAt, k = True, min = 0, max = 1, dv = 0 )
+    mc.connectAttr( '{}.{}'.format( toggleCtrl.C, secondaryVisCtrlAt ), controlsPartGrp + '.v' )
+    
+    ikControls = []
+    
+    for i in range( 1, len( cvs ) ):
+        
+        cvpos = mc.xform( cvs[i], q = 1, t = 1, ws = 1 )
+        tempPosGrp = mc.group( n = prefix + 'tempPosReference_grp', w = True, em = True )
+        mc.xform( tempPosGrp, t = ( cvpos[0], cvpos[1], cvpos[2] ) )
+        cvCtrl = control.Control( prefix = prefix + 'IkSub%d' % i, moveTo = tempPosGrp, lockHideChannels = ['r'], shape = 'squareY', colorName = 'green', scale = scale * 3, ctrlParent = controlsPartGrp )
+        ikControls.append( cvCtrl )
+        
+        mc.delete( tempPosGrp )
+    
+    # make connection lines between controls
+    
+    conlineGrp = mc.group( n = prefix + 'IkSubControlsConLines_grp', p = rigmodule.Controls, em = 1 )
+    mc.connectAttr( controlsPartGrp + '.v', conlineGrp + '.v' )
+    
+    for i in range( 1, len( cvs ) - 1 ):
+        
+        ctrlA = ikControls[i - 1]
+        if i == 0:
+            
+            ctrlA = rigmodule.LocalSpace
+            conline = curve.makeConnectionLine( ctrlA, ikControls[i].C, prefix = '%sIkSubCtrlConLine%d' % ( prefix, ( i + 1 ) ) )
+
+        else:
+            
+            conline = curve.makeConnectionLine( ctrlA.C, ikControls[i].C, prefix = '%sIkSubCtrlConLine%d' % ( prefix, ( i + 1 ) ) )
+            mc.parent( conline, conlineGrp )
+            
     return ikControls
     
 def _attachControlsToCurve( controls, ikAttachCurve, rigmodule ):
@@ -866,5 +911,322 @@ def _setupCurlChainRotation( ctrl, objectChain, prefix ):
         driverValue += spanIncrement
         angleMaxValue -= angleIncrement
         biasParam += biasIncrem
+
+def _createFkIkDuplicateChains(skinJoints, parentObj):
+    
+    '''
+    create a duplicate of bind chain for fk and ik setups
+    :return fk and ik joint chains
+    '''
+    # make duplicate chains for ik and fk
+    fkJointNames = [ name.removeSuffix( j ) + 'Fk' for j in  skinJoints  ]
+    fkJoints = joint.duplicateChain(  skinJoints , newjointnames = fkJointNames )
+    
+    ikJointNames = [ name.removeSuffix( j ) + 'Ik' for j in  skinJoints  ]
+    ikJoints = joint.duplicateChain(  skinJoints , newjointnames = ikJointNames )
+    
+    # parent objects
+    if parentObj:
+        
+        mc.parent( ikJoints[0], parentObj )
+        mc.parent( fkJoints[0], parentObj )
+    else:
+        mc.parent(ikJoints[0], w = True)
+        mc.parent(fkJoints[0], w = True)
+    
+    # set some Colors and different radius
+    jointRad = mc.getAttr( skinJoints[0] + '.radius' )
+    
+    fkIkJointList = fkJoints, ikJoints
+    newRad = jointRad * 1.3
+    jntColor = 22
+    for chainJnts in fkIkJointList:
+        
+        for j in chainJnts:
+            mc.setAttr( j + '.radius', newRad )
+            mc.setAttr( j + '.ove', 1 )
+            mc.setAttr( j + '.ovc', jntColor )
+        
+        newRad = newRad * 1.3
+        jntColor = 13
+        
+    return fkJoints, ikJoints
+
+def _connectIkFkJoints( bindJnts, fkJoints, ikJoints, rigmodule ):
+    
+    for bind,fk,ik in zip( bindJnts, fkJoints, ikJoints):
+        
+        constraintName = mc.parentConstraint( fk, bind, mo = True )[0]
+        mc.parentConstraint( ik, bind, mo = True )
+        constraintAttr = constraint.getWeightAttrs(constraintName)
+        
+        rigmodule.connectIkFk( '{}.{}'.format( constraintName, constraintAttr[1] ) )
+        rigmodule.connectIkFk( '{}.{}'.format( constraintName, constraintAttr[0] ), reversed = True )
+
+
+def _createAndPositionTwistLocs( prefix, ikcurve, twistUpVec, ikJoints ):
+    
+    # create locators for twist reference using pymel
+    startIkJnt = pm.PyNode( ikJoints[0] )
+    endIkJnt = pm.PyNode( ikJoints[-1] )
+    startTwistLoc = pm.spaceLocator( n = '%sTwistRefStart_loc' % prefix )
+    endTwistLoc = pm.spaceLocator( n = '%sTwistRefEnd_loc' % prefix )
+    
+    # get length of curve to multiply by the ref vector
+    curveLen = curve.getLength( ikcurve )
+    
+    # create reference vector based on passed string 
+    if twistUpVec == "xAxis":
+        refVec = pm.dt.Vector.xAxis
+    elif twistUpVec == "xNegAxis":
+        refVec = pm.dt.Vector.xNegAxis
+    elif twistUpVec == "yAxis":
+        refVec = pm.dt.Vector.yAxis
+    elif twistUpVec == "yNegAxis":
+        refVec = pm.dt.Vector.yNegAxis
+    elif twistUpVec == "zAxis":
+        refVec = pm.dt.Vector.zAxis
+    elif twistUpVec == "zNegAxis":
+        refVec = pm.dt.Vector.zNegAxis        
+    else:
+        raise ValueError("# String passed for 'twistUpVec' argument is not valid ")
+        
+    # position locators
+    refVecExtented = refVec * curveLen
+    for loc, jnt in zip( [startTwistLoc, endTwistLoc], [startIkJnt, endIkJnt] ):
+        jntPosVec = pm.xform( jnt, q = True, ws = True, t = True )
+        loc.setTranslation( jntPosVec  + refVecExtented )
+        
+        
+        
+    return [startTwistLoc.name(), endTwistLoc.name()]
+    
+def _ikSplineTwistSetup( prefix, rootCtrl, tailIkControls, chainIk, ikcurve, ikJoints,  twistUpVec, rigmodule ):
+    
+    startTwistLoc, endTwistLoc = _createAndPositionTwistLocs( prefix, ikcurve, twistUpVec, ikJoints )
+    
+    # parent locators
+    twistLocsGrp = mc.group( em = True, n = '%sRefTwistLocs_grp', p = rigmodule.Parts )
+    mc.parent( startTwistLoc, endTwistLoc, twistLocsGrp )
+    
+    # active advaced twist attributes from ik solver
+    mc.setAttr( '%s.%s' % ( chainIk, 'dTwistControlEnable' ), 1 )
+    mc.setAttr( '%s.%s' % ( chainIk, 'dWorldUpType' ), 2 )
+    mc.setAttr( '%s.%s' % ( chainIk, 'dForwardAxis' ), 0 )
+    mc.setAttr( '%s.%s' % ( chainIk, 'dTwistControlEnable' ), 1 )
+    
+    # connect locators
+    mc.connectAttr( startTwistLoc + '.worldMatrix[0]', chainIk + '.dWorldUpMatrix' )
+    mc.connectAttr( endTwistLoc + '.worldMatrix[0]', chainIk + '.dWorldUpMatrixEnd' )
+    
+    # make constraints
+    mc.parentConstraint( rootCtrl.C, startTwistLoc, mo = True, sr = ['x', 'y', 'z'] )
+    # unlock last ik control rotation
+    attribute.openAllTransformVis( tailIkControls[-1].C,  r = True )
+    mc.parentConstraint( tailIkControls[-1].C, endTwistLoc, mo = True, sr = ['x', 'y', 'z'] )
+
+def buildIkFk(
+            startJnt,
+            endJnt,
+            ikcurve,
+            subCurve = None,
+            prefix = 'tail',
+            ctrlScale = 1.0,
+            baseRigData = None,
+            localToggle = False,
+            twistUpVec = "zNegAxis",
+            controlsWorldOrient = False,
+            stretch = True
+            ):
+    '''
+    Note:
+    - ikcurve should have less CVs good for animation control
+    - subcure should be the same shape and size curve, only with more detail
+    
+    :param startJnt: str, tail start joint
+    :param endJnt: str, tail end joint
+    :param ikcurve: str, curve to be used for IK handle setup, main IK controls will be made based on its CVs
+    :param subCurve: str, curve to be used for detailed control, created automaticly if None
+    :param prefix: str, prefix for naming new objects
+    :param ctrlScale: float, scale for size of control objects
+    :param baseRigData: rigbase.base build(), base rig data returned from rigbase.base build() to connect visibility channels etc. to the main base
+    :param localToggle: bool, add toggle attributes on local Root control
+    :param twistUpVec: str, reference vector to place ik twist locators option are: "xAxis", "xNegAxis", "yAxis", "yNegAxis", "zAxis", "zNegAxis"
+    :param controlsWorldOrient: bool, if passed ik controls and subcontrols will have world orient
+    :param stretch: bool, create stretch system for ik joints
+    :return: dictionary with rig objects
+    '''
+
+    #===========================================================================
+    # module
+    #===========================================================================
+    
+    rigmodule = module.Module( prefix )
+    rigmodule.parent( baseRigData = baseRigData )
+    rigmodule.connect( baseRigData = baseRigData )
+    
+    # ==============================================
+    # curve and IK solver
+    # ==============================================
+    mc.parent( ikcurve, rigmodule.PartsNt )
+    
+    skinJoints = joint.listChainStartToEnd( startJnt, endJnt )
+    
+    # make Ik - Fk joints
+    fkJoints, ikJoints = _createFkIkDuplicateChains( skinJoints, parentObj = rigmodule.Joints )
+    
+    # connect ik/fk joints bind joints
+    _connectIkFkJoints( skinJoints, fkJoints, ikJoints, rigmodule )
+    
+    # make toggle control
+    toggleCtrl = control.Control( prefix = prefix + 'Toggle', lockHideChannels = ['t', 'r'], translateTo = startJnt, rotateTo = startJnt, scale = ctrlScale * 15, colorName = 'secondary', shape = 't', ctrlParent = rigmodule.Controls )
+    
+    # adjust default toggle control orientation shape
+    shape.translateRotate( toggleCtrl.C, rot = [0, 90, 0], localSpace = True )
+    
+    # duplicate curve for IK spline
+    ikBaseCurve = mc.duplicate( ikcurve, n = prefix + 'IkBase_crv' )[0]
+    
+    # upres provided curve
+    origSpansNum = mc.getAttr( ikcurve + '.spans' )
+    mc.rebuildCurve( ikcurve, rebuildType = 0, spans = ( origSpansNum + 3 ) * 2, degree = 3, ch = 0, replaceOriginal = True )
+    
+    # setup IK spline handle
+    chainIk = mc.ikHandle( n = prefix + '_ikh', sol = 'ikSplineSolver', sj = ikJoints[0], ee = ikJoints[-1], c = ikcurve, ccv = 0, parentCurve = 0 )[0]
+    mc.parent( chainIk, rigmodule.PartsNt )
+
+    # ==============================================
+    # main global ctrl
+    # ==============================================
+    
+    rootCtrl =  control.Control( prefix = prefix + 'Root', shape = 'inverseCrown', colorName = 'orange', translateTo = ikJoints[0], rotateTo =  ikJoints[0], scale = ctrlScale * 4, ctrlParent = rigmodule.Controls, lockHideChannels = [] )
+    shape.translateRotate( rootCtrl.C, rot = [0, 0, 90], localSpace = True )
+    rigmodule.connectIkFk( rootCtrl.Off + '.v' )
+    #attribute.addSection( rootCtrl.C )
     
     
+    if localToggle:
+        rigmodule.customToggleObject( toggleCtrl.C )
+    
+    # ==============================================
+    # IK controls
+    # ==============================================
+    
+    # build main controls
+    curveCvs = mc.ls( ikBaseCurve + '.cv[*]', fl = 1 )
+    tailIkControls = _makeTailIkControls( rootCtrl, curveCvs, prefix, ctrlScale, rigmodule )
+    
+    # orient controls
+    if not controlsWorldOrient:
+        for i in range( len( tailIkControls ) ):
+            mc.delete( mc.orientConstraint( rootCtrl.C, tailIkControls[i].Off ) )
+                
+    # bind curve to controls    
+    mc.cluster( curveCvs[0], n = prefix + 'CurveCv0_cls', wn = ( rigmodule.LocalSpace, rigmodule.LocalSpace ), bs = 1 )
+    for i in range( 1, len( curveCvs ) ):
+        mc.cluster( curveCvs[i], n = prefix + 'CurveCv%d_cls' % ( i + 1 ), wn = ( tailIkControls[i - 1].C, tailIkControls[i - 1].C ), bs = 1 )
+    
+    # build sub controls
+    subCurve = _makeCurveForSubControls( prefix, ikBaseCurve, curveCvs )
+    subCurveCvs = mc.ls( subCurve + '.cv[*]', fl = 1 )
+    tailIkSubControls = _makeTailIkSubControls( toggleCtrl, subCurveCvs, prefix, ctrlScale, rigmodule )
+    _attachControlsToCurve( tailIkSubControls, ikBaseCurve, rigmodule )
+    
+    # orient sub controls controls
+    if not controlsWorldOrient:
+        for i in range( len( tailIkSubControls ) ):
+            mc.delete( mc.orientConstraint( rootCtrl.C, tailIkSubControls[i].Off ) )
+    
+    # bind curve to controls
+    mc.cluster( subCurveCvs[0], n = prefix + 'SubCurveCv0_cls', wn = ( rigmodule.LocalSpace, rigmodule.LocalSpace ), bs = 1 )
+    for i in range( 1, len( subCurveCvs ) ): mc.cluster( subCurveCvs[i], n = prefix + 'SubCurveCv%d_cls' % ( i + 1 ), wn = ( tailIkSubControls[i - 1].C, tailIkSubControls[i - 1].C ), bs = 1 )
+
+    # ==============================================
+    # IK controls space switching
+    # ==============================================
+    '''    
+    constraint.makeSwitch( rootCtrl.Off, rigmodule.Toggle, 'allSpaceTrans', ['local', 'global', 'body'], 'parentConstraint', [rigmodule.LocalSpace, rigmodule.GlobalSpace, rigmodule.BodySpace], 1, defaultIdx = 0, skipRotation = True )
+    constraint.makeSwitch( rootCtrl.Off, rigmodule.Toggle, 'allSpaceRot', ['local', 'global', 'body'], 'orientConstraint', [rigmodule.LocalSpace, rigmodule.GlobalSpace, rigmodule.BodySpace], 1, defaultIdx = 2 )
+    constraint.makeSwitch( upVectorCtrl.Off, rigmodule.Toggle, 'upVectorSpace', ['local', 'global', 'body'], 'orientConstraint', [ikjoints[-1], rigmodule.GlobalSpace, rigmodule.BodySpace], 1, defaultIdx = 2 )
+    '''
+    # setup tail controls parenting and switching
+    
+    customSpaceGroups = []
+    
+    for i in range( len( tailIkControls ) ):
+        
+        localSpaceObj = tailIkControls[i - 1].C
+        defaultVal = 1
+        
+        if i == 0:
+            
+            localSpaceObj = rootCtrl.C
+            defaultVal = 0
+        '''
+        customSpaceGrp = transform.makeGroup( prefix = '%sExtraASpace_%d' % ( prefix, i + 1 ) )
+        customSpaceGroups.append( customSpaceGrp )
+        mc.parent( customSpaceGrp, rigmodule.Parts )
+        '''
+        constraint.makeSwitch( tailIkControls[i].Off, tailIkControls[i].C, 'space', ['local', 'global'], 'parentConstraint', [localSpaceObj, rigmodule.GlobalSpace], 1, defaultIdx = defaultVal )
+
+
+    #===========================================================================
+    # connect control sub curve to IK curve
+    #===========================================================================
+    
+    mc.wire( ikcurve, w = subCurve, dropoffDistance = ( 0, 1000 ), n = prefix + 'SubCurve_wir' )
+    
+    #===========================================================================
+    # Ik Twist setup
+    #===========================================================================
+    
+    _ikSplineTwistSetup( prefix, rootCtrl, tailIkControls, chainIk, ikcurve, ikJoints,  twistUpVec, rigmodule )
+    
+    if stretch:
+        # add stretching
+        stretchAmountAt = 'stretchAmount'
+        mc.addAttr( toggleCtrl.C, ln = stretchAmountAt, at = 'float', k = True, min = 0, max = 1, dv = 1 )
+        chainStretchAmountPlug = toggleCtrl.C + '.' + stretchAmountAt
+        chainStretchRes = joint.stretchyJointChain( ikJoints, curve = ikcurve, scalePlug = rigmodule.getModuleScalePlug(), prefix = prefix + 'ChainStretch', useCurve = True, stretchAmountPlug = chainStretchAmountPlug )
+        
+    
+    
+    
+    #===========================================================================
+    # FK controls
+    #===========================================================================
+    
+    fkChainFixed = fkJoints[:-1]
+    #fkPrefixes = [ '%s%s%d' % ( prefix, 'Fk', i + 1 ) for i in range( len( fkJoints ) ) ]
+    fkControlsGrp, fkControls = general.smartFkControlChain(
+                                            chain = fkChainFixed,
+                                            ctrlsNumber = 5,
+                                            prefix = prefix + "Fk", 
+                                            scale = ctrlScale * 4.0 , 
+                                            ctrlshape = 'circleX', 
+                                            ctrlColorName = 'primary', 
+                                            ctrlParent = rigmodule.Controls 
+                                             )
+    rigmodule.connectIkFk( fkControlsGrp + '.v', reversed = True )
+    #constraint.makeSwitch( fkControls[0].Off, rigmodule.Toggle, 'fkSpace', ['local', 'global', 'body'], 'parentConstraint', [rigmodule.LocalSpace, rigmodule.GlobalSpace, rigmodule.BodySpace], 1, defaultIdx = 0 )
+    
+    return {
+            'module':rigmodule,
+            'rootCtrl':rootCtrl,
+            'tailIkControls':tailIkControls,
+            'customSpaceGroups':customSpaceGroups
+            }    
+
+
+
+
+
+
+
+
+
+
+
+
+
+

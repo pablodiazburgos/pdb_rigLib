@@ -623,8 +623,7 @@ def loadGameJointsSetup( assetName, baseRigData = None, gameJointsGroup = 'gameJ
             mc.parent( gameJnt, boneRootJnt )
         
         mc.parentConstraint( jntDriver, gameJnt, mo = True )
-        for axis in ['.sx', '.sy', '.sz']:
-            mc.connectAttr( jntDriver + axis, gameJnt + axis )
+        mc.scaleConstraint(jntDriver, gameJnt, mo = True )
     
     # clear selection
     mc.select( cl = True)

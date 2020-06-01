@@ -134,3 +134,21 @@ def getCVpositions( curve ):
     positions = [ mc.xform( cv, q = 1, t = 1, ws = 1 ) for cv in curveCvs ]
     
     return positions
+
+def getLength( curve ):
+    '''
+    Get the length for given curve using curve info node
+    :param curve: str, nurbs curve to get arc length
+    :retun float: float value of total curve length
+    '''
+    curveShp = shape.getShape( curve )[0]
+    
+    # create curve info node
+    tempInfoCrv = mc.createNode( 'curveInfo', n = "tempCurveInfo" )
+    mc.connectAttr( curveShp + '.worldSpace[0]', tempInfoCrv + '.inputCurve' )
+    
+    arcLen = mc.getAttr( tempInfoCrv + '.arcLength' )
+    mc.delete( tempInfoCrv )
+    
+    return arcLen
+    
