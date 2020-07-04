@@ -29,6 +29,48 @@ def setupDualConstraintBlend(consnode, driverat, targetorder = [0, 1]):
     anim.setDrivenKey(driverat, consnode + '.' + wtats[ targetorder[0] ], [0, 1], [1, 0])
     anim.setDrivenKey(driverat, consnode + '.' + wtats[ targetorder[1] ], [0, 1], [0, 1])
 
+def getConstraints(object, getDriven = False, checkTransformChannels = ['t', 'r', 's','pv']):
+    
+    '''
+    get constraints from object including poleVector constraint
+    
+    :param constrainedObject: str, constrained object
+    :param getDriven: bool, get only contraint nodes driven by this object
+    :param checkTransformChannels: list(str), list of transform channels to be searched for constraints
+    :return: list(str), list of constraint names
+    '''
+    
+    constraints = []
+    
+    for xformat in checkTransformChannels:
+        
+        for axisat in ['x', 'y', 'z']:
+            
+            plugObj = object + '.' + xformat + axisat
+            
+            if not mc.objExists(plugObj):
+                
+                continue
+            
+            cs = mc.listConnections(plugObj, s = 1, d = 0, t = 'constraint')
+            
+            if cs:
+                
+                constraints.extend(cs)
+    
+    constraints = list(set(constraints))
+    
+    # driven constraints
+    
+    if getDriven:
+        
+        drivenConstraintNodes = mc.listConnections(object + '.parentMatrix', s = 0, d = 1, type = 'constraint')
+        
+        return drivenConstraintNodes
+    
+    
+    return constraints
+
 def getWeightAttrs(constraintNode):
     
     '''

@@ -178,21 +178,33 @@ def makeBlendShapeCombo( blsNode, targetA, targetB, comboBls ):
     :param targetA: str, First target blendshape which actives the combo one
     :param targetB: str, Second target blendshape which actives the combo one
     :param comboBls: str, Combo blendshape (usually a corrective)
-    :return blsNode: str, mult double linear node which does the combo math
+    :return list( str, str), MultiDoubleLinear - ConditionNode
     '''
+    
     # get combo prefix to rename new objects
     comboPrefix = name.removeSuffix( comboBls )
     
     multNode = mc.createNode('multDoubleLinear', n = comboPrefix + '_mdl')
     
+    # create condition to prevent corrective go above one 
+    conNode = mc.createNode('condition', n = comboPrefix + '_con')
+    mc.setAttr( conNode + '.operation', 3 ) # greater or equal
+    mc.setAttr( conNode + '.secondTerm', 1.0 )
+    mc.setAttr( conNode + '.colorIfTrueR', 1.0 )
+    
     # make connections
+    
     mc.connectAttr( blsNode + '.' + targetA, multNode + '.input1' )
     mc.connectAttr( blsNode + '.' + targetB, multNode + '.input2' )
     
-    mc.connectAttr( multNode + '.output',  blsNode + '.' + comboBls )
+    mc.connectAttr( multNode + '.output', conNode + '.firstTerm' )
+    mc.connectAttr( multNode + '.output', conNode + '.colorIfFalseR' )
+    
+    
+    mc.connectAttr( conNode + '.outColorR',  blsNode + '.' + comboBls )
     
 
-
+    return [ multNode, conNode ]
 
 
 

@@ -4,6 +4,7 @@ mouth module
 '''
 
 import maya.cmds as mc
+import pymel.core as pm
 
 from ..base import control
 from ..base import module
@@ -12,6 +13,9 @@ from ..utils import name
 from ..utils import anim
 from ..utils import transform
 from ..utils import connect
+from ..utils import shape
+
+#TODO: commment builLips func and add option for upperJaw
 
 def buildSimpleLips(
                     mouthBuilderGrp,
@@ -129,31 +133,113 @@ def buildSimpleLips(
             }
 
 
+def buildLips(
+                baseRigData,
+                jawJnt,
+                headJnt,
+                prefix = 'lips',
+                ctrlScale = 1.0,
+                ):
+    
+    '''
+    module to create a local lips setup with corner joints
+    
+    '''
+    # create pynodes
+    jawJnt = pm.PyNode( jawJnt )
+    headJnt = pm.PyNode( headJnt )
+    
+    # define upper / lower / mid lips
+    midUpperJnt = pm.PyNode('mouthUpperMid_jnt')
+    midLowerJnt = pm.PyNode('mouthLowerMid_jnt')
+    
+    lUpperJnt = pm.PyNode('l_mouthUpper_jnt')
+    lLowerJnt = pm.PyNode('l_mouthLower_jnt')
+    rUpperJnt = pm.PyNode('r_mouthUpper_jnt')
+    rLowerJnt = pm.PyNode('r_mouthLower_jnt')
+    
+    lUpperCornerJnt = pm.PyNode('l_mouthUpperCorner_jnt')
+    lLowerCornerJnt = pm.PyNode('l_mouthLowerCorner_jnt')
+    rUpperCornerJnt = pm.PyNode('r_mouthUpperCorner_jnt')
+    rLowerCornerJnt = pm.PyNode('r_mouthLowerCorner_jnt')
+    
+    lCornerJnt = pm.PyNode('l_mouthCorner_jnt')
+    rCornerJnt = pm.PyNode('r_mouthCorner_jnt')
 
+    
+    #===========================================================================
+    # module
+    #===========================================================================
+    
+    rigmodule = module.Module( prefix )
+    rigmodule.connect( baseRigData = baseRigData )
+    rigmodule.parent( baseRigData = baseRigData )
+    
+    # create a skin holder joint and parent it
+    holderJnt = jawJnt.duplicate( po = True, n = prefix + 'Local1_jnt' )[0].setParent( rigmodule.PartsNt )
+    
+    
+    #===========================================================================
+    # create upper / lower joints setup
+    #===========================================================================
+    
+    mainCtrls = []
+    retMainCtrls = []
+    
+    for lipJoints, prefixName in zip ( [ [ lUpperJnt, midUpperJnt, rUpperJnt ], [ lLowerJnt, midLowerJnt, rLowerJnt ], [ lUpperCornerJnt, lCornerJnt, lLowerCornerJnt ], [ rUpperCornerJnt, rCornerJnt, rLowerCornerJnt ] ], ['upper', 'lower', 'l_corner', 'r_corner'] ):
+        
+        # create main and groups control which will drive joints 
+        mainCtrl = control.Control(prefix =  prefixName + 'LipMain', shape = 'circle', moveTo = lipJoints[1].name(), rotateTo = lipJoints[1].name(), colorName = 'primary', scale = ctrlScale * 2, ctrlParent = rigmodule.Controls, defLockHide = ['v'])
+        shape.translateRotate( mainCtrl.C, pos = [0, 0, 0], rot = [0, 90, 0], localSpace = True, relative = True )
+        
+        retMainCtrls.append( mainCtrl )
+        
+        mainCtrl = pm.PyNode( mainCtrl.C )
+        mainCtrls.append( mainCtrl )
+        
+        # create mainLocalGrp to later hold upper/lower localLip joints
+        mainLocalGrp = pm.group( n = prefixName + 'LipMainLocal_grp', em = True, w = True )
+        mainLocalGrp.setTranslation( lipJoints[1].getTranslation( space = 'world' ), space = 'world' )
+        mainLocalGrp.setRotation( lipJoints[1].getRotation( space = 'world' ), space = 'world' )
+        mainLocalGrp.setParent( rigmodule.PartsNt )
+        
+        # create offsetGrp for mainLocalGrp so it can be driven by direct connection
+        transform.makeOffsetGrp( mainLocalGrp.name() )
+        
+        # make direct connection
+        mainCtrl.translate.connect( mainLocalGrp.translate )
+        mainCtrl.rotate.connect( mainLocalGrp.rotate )
+        mainCtrl.scale.connect( mainLocalGrp.scale )
+        
+        # create offset group per joint to be clean and it can be driven by direct connection
+        for jnt in lipJoints:
+            offGrp = pm.PyNode( transform.makeOffsetGrp( jnt.name() ) )
+            offGrp.setParent( mainLocalGrp )
+            
+            # create control per joint and parent it
+            prefix = name.removeSuffix( jnt.name() )
+            jntCtrl = control.Control(prefix =  prefix, shape = 'square', moveTo = jnt.name(), rotateTo = jnt.name(), colorName = 'secondary', scale = ctrlScale * 0.5, ctrlParent = mainCtrl.name(), defLockHide = ['v'])
+            shape.translateRotate( jntCtrl.C, pos = [0, 0, 0], rot = [90, 0, 0], localSpace = True, relative = True )
 
+            # make direct connections
+            jntCtrl = pm.PyNode( jntCtrl.C )
+            
+            jntCtrl.translate.connect( jnt.translate )
+            jntCtrl.rotate.connect( jnt.rotate )
+            jntCtrl.scale.connect( jnt.scale )
+            
+            
+    # make contraints to globally drive the lips controls with the rig
+    pm.parentConstraint( headJnt, mainCtrls[0].getParent(), mo = True )
+    pm.parentConstraint( jawJnt, mainCtrls[1].getParent(), mo = True )
+    
+    pm.parentConstraint( jawJnt, headJnt, mainCtrls[2].getParent(), mo = True )
+    pm.parentConstraint( jawJnt, headJnt, mainCtrls[3].getParent(), mo = True )
+        
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    return {
+        'mainCtrls': retMainCtrls
+            }
 
 
 

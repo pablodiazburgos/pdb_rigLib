@@ -167,7 +167,10 @@ def build(
             baseRigData = None,
             endOrientRefObject = '',
             buildTwistJoints = True,
-            twistJointsNumber = 5
+            twistJointsNumber = 5,
+            stretch = True,
+            snappablePv = True,
+            bendy = True
             ):
 
     '''
@@ -198,7 +201,10 @@ def build(
                 endOrientRefObject = endOrientRefObject,
                 isLeg = False,
                 buildTwistJoints = buildTwistJoints,
-                twistJointsNumber = twistJointsNumber
+                twistJointsNumber = twistJointsNumber,
+                stretch = stretch,
+                snappablePv = snappablePv,
+                bendy = bendy
                 )
     
     

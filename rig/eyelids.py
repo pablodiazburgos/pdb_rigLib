@@ -18,7 +18,8 @@ def singleJoint(
                 lowerEyelidJnt,
                 prefix = 'l_eyelids',
                 ctrlScale = 1.0,
-                baseRigData = None
+                baseRigData = None,
+                makeConstraint = False
                 ):
     
     """
@@ -57,20 +58,34 @@ def singleJoint(
     eyelidJointPrefixes = ['Upper', 'Lower']
     eyelidControls = []
     
-    for eyelidJnt, eyelidPrefix in zip( eyelidJoints, eyelidJointPrefixes ):
-        
-        ctrlPrefix = prefix + eyelidPrefix
-        ctrl = control.Control( prefix = ctrlPrefix, lockHideChannels = ['t'], moveTo = eyelidJnt, colorName = 'secondary', scale = ctrlScale * 2, shape = 'circleX', ctrlParent = rigmodule.Controls )
-        eyelidControls.append( ctrl )
-        
-        mc.connectAttr( ctrl.C + '.r', eyelidJnt + '.r' )
-        mc.connectAttr( ctrl.C + '.ro', eyelidJnt + '.ro' )
+    if not makeConstraint:
     
-    mc.parentConstraint( rigmodule.LocalSpace, rigmodule.Controls, mo = True )
-    
+        for eyelidJnt, eyelidPrefix in zip( eyelidJoints, eyelidJointPrefixes ):
+            
+            ctrlPrefix = prefix + eyelidPrefix
+            ctrl = control.Control( prefix = ctrlPrefix, lockHideChannels = ['t'], moveTo = eyelidJnt, colorName = 'secondary', scale = ctrlScale * 2, shape = 'circleX', ctrlParent = rigmodule.Controls )
+            eyelidControls.append( ctrl )
+            
+            mc.connectAttr( ctrl.C + '.r', eyelidJnt + '.r' )
+            mc.connectAttr( ctrl.C + '.ro', eyelidJnt + '.ro' )
+        
+        mc.parentConstraint( rigmodule.LocalSpace, rigmodule.Controls, mo = True )
+        
+    else:
+        for eyelidJnt, eyelidPrefix in zip( eyelidJoints, eyelidJointPrefixes ):
+            
+            ctrlPrefix = prefix + eyelidPrefix
+            ctrl = control.Control( prefix = ctrlPrefix, lockHideChannels = ['t'], moveTo = eyelidJnt, colorName = 'secondary', scale = ctrlScale * 2, shape = 'circleX', ctrlParent = rigmodule.Controls )
+            eyelidControls.append( ctrl )
+            
+            mc.orientConstraint( ctrl.C, eyelidJnt, mo = True )
+        
+        mc.parentConstraint( rigmodule.LocalSpace, rigmodule.Controls, mo = True )
+        
     # inheritance with eye joint - to be added
     
     
     return {
             'module':rigmodule,
+            'controls':eyelidControls
             } 

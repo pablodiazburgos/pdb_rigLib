@@ -267,7 +267,10 @@ def build(
             inFootLoc = None,
             endOrientRefObject = '',
             buildTwistJoints = True,
-            twistJointsNumber = 5
+            twistJointsNumber = 5,
+            stretch = True,
+            snappablePv = True,
+            bendy = True
             ):
     
     '''
@@ -305,7 +308,10 @@ def build(
                 endOrientRefObject = endOrientRefObject,
                 isLeg = True,
                 buildTwistJoints = buildTwistJoints,
-                twistJointsNumber = twistJointsNumber
+                twistJointsNumber = twistJointsNumber,
+                stretch = stretch,
+                snappablePv = snappablePv,
+                bendy = bendy
                 )
     
     # instance of rig module
