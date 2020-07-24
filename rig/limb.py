@@ -1476,6 +1476,14 @@ def _stretchTwistJoints( rigmodule, prefix, twistData, ik1Ctrl, stretchUpperOutP
     posPrefixList = [ 'Upper', 'Lower' ]
     i = 0
     endJntIdx = 1
+    middleJntLocsIdx = 2
+    
+    # get knee/elbow locators
+    middleJntLocs = []
+    
+    if bendy:
+        # main bendy ctrls group
+        mainBendyCtrlsGrp = mc.group( n = prefix + 'MainBendyCtls_grp', em = True, p = rigmodule.Controls )
     
     for posPrefix, stretchOutPlug in zip( posPrefixList, [ stretchUpperOutPlug, stretchLowerOutPlug ] ):
         
@@ -1488,7 +1496,6 @@ def _stretchTwistJoints( rigmodule, prefix, twistData, ik1Ctrl, stretchUpperOutP
         TwistJoints = twistData[i]['twistjoints']
         
         # stretch and translate compensate
-        
         txVal = mc.getAttr( TwistJoints[1] + '.tx' )
         stretchTwistMdl = mc.createNode( 'multDoubleLinear', n = prefix + 'Stretch{}Twist_mdl'.format( posPrefix ) )
         mc.setAttr( stretchTwistMdl + '.input1', txVal )
@@ -1523,11 +1530,40 @@ def _stretchTwistJoints( rigmodule, prefix, twistData, ik1Ctrl, stretchUpperOutP
             mc.connectAttr( squashTwistSwitchOutPlug, twistJnt + '.sz' )
         
         if bendy:
-            _bendySetup( rigmodule, prefix, posPrefix, TwistJoints = twistData[i]['twistjoints'], startJnt = bindJoints[i], endJnt = bindJoints[endJntIdx], stretchTwistMdl = stretchTwistMdl, squashTwistMdv = squashTwistMdv )
+            
+            
+            refLocs = _bendySetup( rigmodule, prefix, posPrefix, TwistJoints = twistData[i]['twistjoints'], startJnt = bindJoints[i], endJnt = bindJoints[endJntIdx], stretchTwistMdl = stretchTwistMdl, squashTwistMdv = squashTwistMdv, mainBendyCtrlsGrp = mainBendyCtrlsGrp )
+            middleJntLocs.append( refLocs[middleJntLocsIdx] )
         
+        middleJntLocsIdx = 0
         endJntIdx += 1
         i += 1
+    
+    #===========================================================================
+    # add middle control if bendy system is created
+    #===========================================================================
+    if middleJntLocs:
+        midJnt = bindJoints[1]
         
+    
+        bendyCtrl = control.Control( lockHideChannels = ['r'], prefix = prefix + 'MidBendy', translateTo = midJnt, scale = 5 , shape = 'circle', ctrlParent = mainBendyCtrlsGrp, colorName = 'secondary' )
+        mc.pointConstraint( midJnt, bendyCtrl.Off, mo = True )
+        mc.orientConstraint( midJnt, bendyCtrl.Off )
+        
+        # break connection inputs
+        for loc in middleJntLocs:
+                connect.disconnect( loc + '.translate', source = True )
+                mc.pointConstraint( bendyCtrl.C, loc, mo = True )
+        
+        # create vis attributes for toggle ctrl
+        attribute.addSection( toggleCtrl.C, sectionName = 'bendySettings' )
+        bendyCtrlsVisAt = 'bendyCtrlVis'
+        bendySubCtrlsVisAt = 'bendySubCtrlVis'
+        mc.addAttr( toggleCtrl.C, ln = bendyCtrlsVisAt, at = 'enum', en = 'off:on', dv = 0, k = True )
+        mc.connectAttr( '{}.{}'.format( toggleCtrl.C, bendyCtrlsVisAt ), mainBendyCtrlsGrp + '.v' )
+        
+        
+    
 def _snappablePvSetup(rigmodule, prefix, ikPvCtrl, txVal, stretchOutPlug = None, distanceBase = None ):
     
     # create ik snap attribute
@@ -1569,7 +1605,7 @@ def _snappablePvSetup(rigmodule, prefix, ikPvCtrl, txVal, stretchOutPlug = None,
     
     return pvStretchSwitchOutPlug
 
-def _bendySetup( rigmodule, prefix, posPrefix, TwistJoints, startJnt, endJnt, stretchTwistMdl, squashTwistMdv ):
+def _bendySetup( rigmodule, prefix, posPrefix, TwistJoints, startJnt, endJnt, stretchTwistMdl, squashTwistMdv, mainBendyCtrlsGrp ):
     
     bendyPrefix = prefix + posPrefix + 'Bendy' 
     
@@ -1603,7 +1639,7 @@ def _bendySetup( rigmodule, prefix, posPrefix, TwistJoints, startJnt, endJnt, st
         refLocList.append( refLoc )
         
     # create control for mid locator
-    bendyCtrl = control.Control( lockHideChannels = ['r'], prefix = bendyPrefix, translateTo = refLocList[1], scale = 5 , shape = 'circle', ctrlParent = rigmodule.Controls )
+    bendyCtrl = control.Control( lockHideChannels = ['r'], prefix = bendyPrefix, translateTo = refLocList[1], scale = 5 , shape = 'circle', ctrlParent = mainBendyCtrlsGrp, colorName = 'secondary' )
     mc.pointConstraint( refLocList[1], bendyCtrl.Off, mo = True )
     mc.orientConstraint( startJnt, bendyCtrl.Off )
     
@@ -1679,6 +1715,9 @@ def _bendySetup( rigmodule, prefix, posPrefix, TwistJoints, startJnt, endJnt, st
     for bendyJnt, twistJnt in zip( bendyJnts, TwistJoints ):
         mc.pointConstraint( bendyJnt, twistJnt, mo = True )
         mc.orientConstraint( bendyJnt, twistJnt, mo = True, sk = ['x'] )
+    
+    # return locators to later connect to a new control
+    return refLocList
     
 def _createMessageAttributes( prefix, toggleCtrl, bindJnts, ikJoints, fkJoints, ik1Ctrl, ikPvCtrl, upperFkCtrl, midFkCtrl, endFkCtrl ):
     
