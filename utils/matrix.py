@@ -7,8 +7,6 @@ matrix
 import maya.cmds as mc
 import pymel.core as pm
 
-#TODO: finish matrixParentConstraint function ... mo is not working
-
 from . import name
 
 def makeBlendMatrices( transforms, prefix = 'mxblend' ):
@@ -23,14 +21,16 @@ def makeBlendMatrices( transforms, prefix = 'mxblend' ):
     return matrixBlend
     
 def matrixParentConstraint( target, object, mo = False, connectTranslate = True, connectRotate = True, connectScale = False ):
+    """
+    Creates a parent constraint based on matrices
+    :param target, pynode, constriant target node
+    :object object
+    """
+    # create prefix for new nodes
+    tgtPrefix =  name.getBase( target.name() )
+    objPrefix =  name.getBase( object.name() )
     
     # convert objects to pymel objects for easier matrix stuffs
-    target = pm.PyNode(target)
-    object = pm.PyNode(object)
-    
-    # create prefix for new nodes
-    tgtPrefix =  name.getBase( target )
-    objPrefix =  name.getBase( object )
     
     prefix = tgtPrefix + objPrefix
     
@@ -41,18 +41,9 @@ def matrixParentConstraint( target, object, mo = False, connectTranslate = True,
     # create default connections
     multiMatrix.matrixSum.connect( decomMatrix.inputMatrix, force = True )
     
-    if connectTranslate:
-        decomMatrix.outputTranslate.connect( object.translate )
-        
-    if connectRotate:
-        decomMatrix.outputRotate.connect( object.rotate )
-
-    if connectScale:
-        decomMatrix.outputScale.connect( object.scale )
-    
     # make connections
     if mo:
-        localOffsetMatrix = target.getMatrix( worldSpace = True ) * object.getMatrix( worldSpace = True ).inverse()
+        localOffsetMatrix = object.getMatrix( worldSpace = True ) * target.getMatrix( worldSpace = True ).inverse()
         
         multiMatrix.matrixIn[0].set( localOffsetMatrix )
         target.worldMatrix[0].connect(  multiMatrix.matrixIn[1] )     
@@ -64,7 +55,12 @@ def matrixParentConstraint( target, object, mo = False, connectTranslate = True,
         object.parentInverseMatrix[0].connect( multiMatrix.matrixIn[1] )
     
     
-    
-    
-    
+    if connectTranslate:
+        decomMatrix.outputTranslate.connect( object.translate )
+        
+    if connectRotate:
+        decomMatrix.outputRotate.connect( object.rotate )
+
+    if connectScale:
+        decomMatrix.outputScale.connect( object.scale )
     
