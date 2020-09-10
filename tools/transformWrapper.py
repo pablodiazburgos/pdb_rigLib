@@ -7,6 +7,8 @@ import maya.cmds as mc
 
 from ..utils import name
 from ..utils import constraint
+from ..utils import connect
+
 from ..tools import rivet
 
 def makePlaneDrivers( prefix = 'driverPlanes', transforms = None, size = 1.0, normalAxis = [1, 0, 0], attachTransforms = True ):
@@ -14,7 +16,7 @@ def makePlaneDrivers( prefix = 'driverPlanes', transforms = None, size = 1.0, no
     """
     Make simple polygonal planes that can later be wrapped or skinned to drive list of transforms
     
-    NOTE: can be used to attach muscle controls. Polygonbal planes can be skinned to skeleton and this will drive muscles.
+    NOTE: can be used to attach muscle controls. Polygon planes can be skinned to skeleton and this will drive muscles.
             Polygons skin weights can be then edited to change muscles movement.
             
         Size can be important for transforms close to each other for automatic rivet attachment - attachTransforms option.
@@ -45,7 +47,7 @@ def makePlaneDrivers( prefix = 'driverPlanes', transforms = None, size = 1.0, no
         
         mergedPolymesh = polyMeshes[0]
     
-    mergedPolymesh = mc.rename( mergedPolymesh, prefix + 'Merged_msh' )
+    mergedPolymesh = mc.rename( mergedPolymesh, prefix + 'Merged_pxy' )
     
     #===========================================================================
     # attach transforms

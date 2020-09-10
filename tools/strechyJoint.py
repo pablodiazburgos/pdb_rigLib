@@ -58,8 +58,8 @@ def setupFromJoint(
     endLoc.setTranslation( strechyJnt.getChildren()[0].getTranslation(space = 'world'), space = 'world' )
     
     # create ik
-    _logger.debug( "strechyJnt: %s" % strechyJnt.name() )
-    _logger.debug( "strechyJnt_Children: %s" % strechyJnt.getChildren()[0].name() )
+    _logger.debug( "strechyJnt: {}".format( strechyJnt.name() ) )
+    _logger.debug( "strechyJnt_Children: {}".format( strechyJnt.getChildren()[0].name() ) )
 
     ikHandle = pm.ikHandle( sj = strechyJnt, ee = strechyJnt.getChildren()[0], solver = 'ikSCsolver', n = prefix + '_ikh' )[0] 
     ikHandle.setParent( endLoc )
@@ -71,7 +71,7 @@ def setupFromJoint(
     # lock no needed attributes
     if rotateLock:
         for at in rotateLock:
-            pm.setAttr( strechyJnt.name() + '.r%s' % at, l = True)
+            pm.setAttr( strechyJnt.name() + '.r{}'.format( at ), l = True)
     
 def _stretchSetup(prefix, startLoc, endLoc, strechyJnt, squash, rigModule):
     
@@ -86,7 +86,7 @@ def _stretchSetup(prefix, startLoc, endLoc, strechyJnt, squash, rigModule):
     rigModuleMainGrp.moduleScale.connect( scaleCompMdl.input1 )
     scaleCompMdl.input2.set( disNode.distance.get() )
     
-    # make stretch connectins
+    # make stretch connections
     stretchMdv = pm.createNode( 'multiplyDivide', n = prefix + 'Stretch_mdv' )
     stretchMdv.operation.set( 2 )
     
@@ -96,7 +96,7 @@ def _stretchSetup(prefix, startLoc, endLoc, strechyJnt, squash, rigModule):
     stretchMdv.outputX.connect( strechyJnt.scaleX )
     
     if squash:
-        # make squash connectins
+        # make squash connections
         squashMdv = pm.createNode( 'multiplyDivide', n = prefix + 'Squash_mdv' )
         squashMdv.operation.set( 2 )
       

@@ -3,7 +3,6 @@ Module to make limbs
 @category Rigging @subcategory rig
 """
 #TODO: add reference twist and space switches
-#TODO: stretch and bendy
 #TODO: doIkLimit fuction is not working yet
 #TODO: study transform.rotateAlignToWorld
 
@@ -1562,8 +1561,6 @@ def _stretchTwistJoints( rigmodule, prefix, twistData, ik1Ctrl, stretchUpperOutP
         mc.addAttr( toggleCtrl.C, ln = bendyCtrlsVisAt, at = 'enum', en = 'off:on', dv = 0, k = True )
         mc.connectAttr( '{}.{}'.format( toggleCtrl.C, bendyCtrlsVisAt ), mainBendyCtrlsGrp + '.v' )
         
-        
-    
 def _snappablePvSetup(rigmodule, prefix, ikPvCtrl, txVal, stretchOutPlug = None, distanceBase = None ):
     
     # create ik snap attribute

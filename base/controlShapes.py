@@ -395,7 +395,7 @@ def moveSimple(scale = [1, 1, 1]):
     
     return new
 
-def triangle( scale = [1, 1, 1] ):
+def triangle( scale = [1, 1, 1], normal = 'y' ):
     
     pos = []
     pos.append( ( 0.5, 0, 0 ) )
@@ -404,6 +404,20 @@ def triangle( scale = [1, 1, 1] ):
     pos.append( ( 0.5, 0, 0 ) )
     
     new = mc.curve( d = 1, p = pos )
+    
+    if normal == '-y':
+        shape.translateRotate( new, pos = [0, 0, 0], 
+                                rot = [180, 0, 0], localSpace = True, 
+                                relative = True, deleteHistory = True )
+    if normal == 'z':
+        shape.translateRotate( new, pos = [0, 0, 0], 
+                                rot = [90, 0, 0], localSpace = True, 
+                                relative = True, deleteHistory = True )
+    if normal == '-z':
+        shape.translateRotate( new, pos = [0, 0, 0], 
+                                rot = [-90, 0, 0], localSpace = True, 
+                                relative = True, deleteHistory = True )
+        
     shape.scale( new, scale )
     
     return new

@@ -358,6 +358,8 @@ def build(
     
     return {
             'rigdata':limbData,
+            'upperTwistData': limbData['twistData'][0],
+            'lowerTwistData': limbData['twistData'][1],
             'module':limbData['module'],
             'ik1Ctrl':limbData['ik1Ctrl'],
             'ikBaseCtrl':limbData['ikBaseCtrl'],

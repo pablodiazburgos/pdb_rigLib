@@ -201,6 +201,9 @@ class Control():
         elif shape == 't': control = controlShapes.t()
         elif shape == 'moveSimple': control = controlShapes.moveSimple()
         elif shape == 'triangle': control = controlShapes.triangle()
+        elif shape == 'inverseTriangle': control = controlShapes.triangle( normal = '-y' )
+        elif shape == 'triangleZ': control = controlShapes.triangle( normal = 'z' )
+        elif shape == 'inverseTriangleZ': control = controlShapes.triangle( normal = '-z' )
         
         else: raise( Exception( 'unregistered shape name "%s"' % shape ) )
         

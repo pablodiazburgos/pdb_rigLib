@@ -4,6 +4,7 @@ eyebrows module
 '''
 
 import maya.cmds as mc
+import pymel.core as pm
 
 from ..utils import name
 from ..utils import shape
@@ -12,6 +13,8 @@ from ..utils import transform
 
 from ..base import control
 from ..base import module
+
+
 
 def simpleJoints( 
             innerJnt,
@@ -46,7 +49,6 @@ def simpleJoints(
     #===========================================================================
     # module
     #===========================================================================
-    
     rigmodule = module.Module( prefix )
     rigmodule.connect( baseRigData = baseRigData )
     rigmodule.parent( baseRigData = baseRigData )
@@ -115,3 +117,77 @@ def simpleJoints(
             'mainCtrl':mainCtrl,
             'subControls':subControls
             }
+
+
+def pmSimpleJoints(
+                lInJnt,
+                lMidJnt,
+                lOutJnt,
+                rInJnt,
+                lLoc,
+                rMidJnt,
+                rOutJnt,
+                rLoc,
+                prefix = 'eyebrow',
+                baseRigData = None,
+                ctrlScale = 1.0
+                ):
+    
+    #===========================================================================
+    # module
+    #===========================================================================
+    
+    rigmodule = module.Module( prefix )
+    rigmodule.connect( baseRigData = baseRigData )
+    rigmodule.parent( baseRigData = baseRigData )
+    
+    #===========================================================================
+    # parent joints
+    #===========================================================================
+    pm.parent( lInJnt, lMidJnt, lOutJnt, rInJnt, rMidJnt, rOutJnt, rigmodule.Joints )
+    
+    #===========================================================================
+    # make controls
+    #===========================================================================
+    
+    # CREATE MAIN CONTROLS
+    lCtrl = control.Control( prefix = prefix + 'Main', lockHideChannels = [], moveTo = lLoc, shape = 'circleZ', scale = ctrlScale * 2, ctrlParent = rigmodule.Controls)
+    rCtrl = control.Control( prefix = prefix + 'Main', lockHideChannels = [], moveTo = rLoc, shape = 'circleZ', scale = ctrlScale * 2, ctrlParent = rigmodule.Controls)
+
+    lMainCtrl = pm.PyNode( lCtrl.C )
+    rMainCtrl = pm.PyNode( rCtrl.C )
+    
+    pm.parentConstraint( rigmodule.LocalSpace, rigmodule.Joints, mo = True )
+    
+    # CREATE SUB CONTROLS 
+    jntsList = [lInJnt, lMidJnt, lOutJnt, rInJnt, rMidJnt, rOutJnt]
+    
+    mainCtrl = lMainCtrl
+    for i, jnt in enumerate( jntsList ):
+        
+        jntPrefix = name.removeSuffix( jnt.name() )
+        subCtrl = control.Control( prefix = jntPrefix, colorName = 'secondary', lockHideChannels = [], moveTo = jnt, shape = 'move', scale = ctrlScale * 1, ctrlParent = mainCtrl.C )
+        
+        
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

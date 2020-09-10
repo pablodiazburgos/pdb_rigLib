@@ -63,4 +63,8 @@ def matrixParentConstraint( target, object, mo = False, connectTranslate = True,
 
     if connectScale:
         decomMatrix.outputScale.connect( object.scale )
-    
+        
+    return {
+            'decomMatrix':decomMatrix,
+            'multMatrix':multiMatrix
+            }
