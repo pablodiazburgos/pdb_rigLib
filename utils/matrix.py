@@ -41,18 +41,29 @@ def matrixParentConstraint( target, object, mo = False, connectTranslate = True,
     # create default connections
     multiMatrix.matrixSum.connect( decomMatrix.inputMatrix, force = True )
     
+    # get object parent if exists
+    objectParent = object.getParent()
+    
     # make connections
     if mo:
         localOffsetMatrix = object.getMatrix( worldSpace = True ) * target.getMatrix( worldSpace = True ).inverse()
         
         multiMatrix.matrixIn[0].set( localOffsetMatrix )
         target.worldMatrix[0].connect(  multiMatrix.matrixIn[1] )     
-        object.parentInverseMatrix[0].connect( multiMatrix.matrixIn[2] )
+        
+        if objectParent:
+            objectParent.worldInverseMatrix[0].connect( multiMatrix.matrixIn[2] )
+        else:
+            object.parentInverseMatrix[0].connect( multiMatrix.matrixIn[2] )
         
     else:
         
-        target.worldMatrix[0].connect(  multiMatrix.matrixIn[0] )     
-        object.parentInverseMatrix[0].connect( multiMatrix.matrixIn[1] )
+        target.worldMatrix[0].connect(  multiMatrix.matrixIn[0] )    
+        
+        if objectParent:
+            objectParent.worldInverseMatrix[0].connect( multiMatrix.matrixIn[1] )
+        else:
+            object.parentInverseMatrix[0].connect( multiMatrix.matrixIn[1] )
     
     
     if connectTranslate:

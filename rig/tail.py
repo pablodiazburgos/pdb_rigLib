@@ -1213,8 +1213,10 @@ def buildIkFk(
     return {
             'module':rigmodule,
             'rootCtrl':rootCtrl,
-            'tailIkControls':tailIkControls,
-            'customSpaceGroups':customSpaceGroups
+            'tailIkCtrls':tailIkControls,
+            'tailFkCtrls': fkControls,
+            'customSpaceGroups':customSpaceGroups,
+            'toogleCtrl': toggleCtrl
             }    
 
 

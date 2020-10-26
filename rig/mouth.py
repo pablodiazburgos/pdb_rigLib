@@ -15,8 +15,7 @@ from ..utils import transform
 from ..utils import connect
 from ..utils import shape
 
-#TODO: commment builLips func and add option for upperJaw
-
+#TODO: commment builLips func 
 def buildSimpleLips(
                     mouthBuilderGrp,
                     baseRigData,
@@ -137,17 +136,22 @@ def buildLips(
                 baseRigData,
                 jawJnt,
                 headJnt,
+                upperJawJnt = '',
+                followUpperJaw = False,
                 prefix = 'lips',
                 ctrlScale = 1.0,
                 ):
     
     '''
     module to create a local lips setup with corner joints
-    
     '''
+    
     # create pynodes
     jawJnt = pm.PyNode( jawJnt )
     headJnt = pm.PyNode( headJnt )
+    
+    if followUpperJaw:
+        headJnt = pm.PyNode( upperJawJnt )
     
     # define upper / lower / mid lips
     midUpperJnt = pm.PyNode('mouthUpperMid_jnt')
