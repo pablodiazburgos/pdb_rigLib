@@ -183,7 +183,9 @@ def build(
             prefix = 'newtail',
             ctrlScale = 1.0,
             baseRigData = None,
-            localToggle = False
+            localToggle = False,
+            rootCtrlShape = 'inverseCrown',
+            rootCtrlColor = 'orange'
             ):
     
     '''
@@ -199,6 +201,8 @@ def build(
     :param ctrlScale: float, scale for size of control objects
     :param baseRigData: rigbase.base build(), base rig data returned from rigbase.base build() to connect visibility channels etc. to the main base
     :param localToggle: bool, add toggle attributes on local Root control
+    :param rootCtrlShape: str, shape for root control
+    :param rootCtrlColor: str, color for root control
     :return: dictionary with rig objects
     '''
     
@@ -219,7 +223,7 @@ def build(
     # make system joints
     skinJoints = joint.listChainStartToEnd( startJnt, endJnt )    
     ikjoints = _buildDuplicateChain( skinJoints, rigmodule, prefix = prefix + 'Sys', connectWithDriver = False, radiusMulti = 0.8, parentObj = None )
-    
+
     # duplicate curve for IK spline
     ikBaseCurve = mc.duplicate( ikcurve, n = prefix + 'IkBase_crv' )[0]
     
@@ -237,9 +241,9 @@ def build(
     # main global ctrl
     # ==============================================
     
-    rootCtrl = control.Control( prefix = prefix + 'Root', shape = 'inverseCrown', colorName = 'orange', translateTo = ikjoints[0], scale = ctrlScale * 4, ctrlParent = rigmodule.Controls, lockHideChannels = ['rz'] )
+    rootCtrl = control.Control( prefix = prefix + 'Root', shape = rootCtrlShape, colorName = rootCtrlColor, translateTo = ikjoints[0], scale = ctrlScale * 4, ctrlParent = rigmodule.Controls, lockHideChannels = ['rz'] )
     attribute.addSection( rootCtrl.C )
-    
+
     if localToggle:
         
         rigmodule.customToggleObject( rootCtrl.C )

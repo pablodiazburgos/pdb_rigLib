@@ -85,4 +85,5 @@ def build(
             'middleControls': fingerCtrls[2],
             'ringControls': fingerCtrls[3],
             'pinkyControls': fingerCtrls[4],
+            'module':rigmodule
             }

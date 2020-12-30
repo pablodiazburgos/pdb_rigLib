@@ -296,10 +296,10 @@ def build_old(
     midFkCtrl = control.Control( lockHideChannels = ['t'], prefix = fkPrefixSeq[1], moveTo = midJnt, scale = 3 * ctrlScale, shape = 'cubeOnBaseX', ctrlParent = upperFkCtrl.C )
     endFkCtrl = control.Control( lockHideChannels = ['t'], prefix = fkPrefixSeq[2], moveTo = endJnt, scale = 3 * ctrlScale, shape = 'cubeOnBaseX', ctrlParent = midFkCtrl.C )
     
-    # connect FK controls to joints    
+    # connect FK controls to joints
     mc.orientConstraint( upperFkCtrl.C, upperJnt )
     mc.connectAttr( upperFkCtrl.C + '.ro', upperJnt + '.ro' )
-    
+
     for c, j in zip( [midFkCtrl, endFkCtrl], [midJnt, endJnt] ):
         
         mc.connectAttr( c.C + '.r', j + '.r' )
@@ -341,9 +341,9 @@ def build_old(
         mc.parent( ikEndJntTargetGrp, ikRotCtrl.C )
         mc.makeIdentity( ikEndJntTargetGrp, a = 0, r = 1 )
     
-    constraint.makeSwitch( upperFkCtrl.Off, rigmodule.Toggle, 'fkSpace', ['local', 'global', 'body'], 'orientConstraint', [rigmodule.LocalSpace, rigmodule.GlobalSpace, rigmodule.BodySpace], 1, defaultIdx = 2 )
-    constraint.makeSwitch( endFkCtrl.Off, rigmodule.Toggle, 'fkHandSpace', ['local', 'global', 'body'], 'orientConstraint', [midJnt, rigmodule.GlobalSpace, rigmodule.BodySpace], 1 )
-    constraint.makeSwitch( endJnt, rigmodule.Toggle, 'fkIk', ['fk', 'ik'], 'orientConstraint', [endFkCtrl.C, ikEndJntTargetGrp ], 0 )
+    constraint.makeSwitch( upperFkCtrl.Off, rigmodule.Toggle, 'fkSpace', ['local', 'global', 'body'], 'orientConstraint', [rigmodule.LocalSpace, rigmodule.GlobalSpace, rigmodule.BodySpace], maintainOffset = 1, defaultIdx = 2 )
+    constraint.makeSwitch( endFkCtrl.Off, rigmodule.Toggle, 'fkHandSpace', ['local', 'global', 'body'], 'orientConstraint', [midJnt, rigmodule.GlobalSpace, rigmodule.BodySpace], maintainOffset = 1 )
+    constraint.makeSwitch( endJnt, rigmodule.Toggle, 'fkIk', ['fk', 'ik'], 'orientConstraint', [endFkCtrl.C, ikEndJntTargetGrp ], maintainOffset = 0 )
    
     # set IK as default
     
@@ -1202,7 +1202,13 @@ def build(
     constraint.makeSwitch( ik1Ctrl.Off, rigmodule.Toggle, 'ikSpace', ['local', 'global', 'body'], 'parentConstraint', [rigmodule.LocalSpace, rigmodule.GlobalSpace, rigmodule.BodySpace], maintainOffset = 1, defaultIdx = 1 )
     
     # fk and hand switches
-   
+
+    # create extra space group for fk local orient
+    fkLocalSpace = mc.group(em = True, n = 'local' + prefix + 'Fk_orientConstraint_grp')
+
+    mc.delete(mc.parentConstraint( upperJnt, fkLocalSpace ))
+    mc.parent(fkLocalSpace , rigmodule.Parts)
+
     # make end fk orient contraint connection fix so space switch would work properly
     fkEndJntTargetGrp = mc.group( n = prefix + 'fkSafeOffsetHand_grp', em = 1, p = endJnt, r = True )
     mc.parent( fkEndJntTargetGrp, endFkCtrl.C )
@@ -1213,8 +1219,8 @@ def build(
         connect.disconnect( '{}.r{}'.format( fkJoints[2], axis ) )
     mc.orientConstraint( fkEndSafeOrientConstraintGrp, fkJoints[2] )
     
-    constraint.makeSwitch( upperFkCtrl.Off, rigmodule.Toggle, 'fkSpace', ['local', 'global', 'body'], 'orientConstraint', [rigmodule.LocalSpace, rigmodule.GlobalSpace, rigmodule.BodySpace], 1, defaultIdx = 2 )
-    constraint.makeSwitch( endFkCtrl.Off, rigmodule.Toggle, 'fkHandSpace', ['local', 'global', 'body'], 'orientConstraint', [fkJoints[1], rigmodule.GlobalSpace, rigmodule.BodySpace], 1 )
+    constraint.makeSwitch( upperFkCtrl.Off, rigmodule.Toggle, 'fkSpace', ['local', 'global', 'body'], 'orientConstraint', [fkLocalSpace, rigmodule.GlobalSpace, rigmodule.BodySpace], maintainOffset = 1, defaultIdx = 2 )
+    constraint.makeSwitch( endFkCtrl.Off, rigmodule.Toggle, 'fkHandSpace', ['local', 'global', 'body'], 'orientConstraint', [fkLocalSpace, rigmodule.GlobalSpace, rigmodule.BodySpace], maintainOffset = 1 )
   
 
     # set IK as default
@@ -1261,6 +1267,7 @@ def build(
     'globalSpaceGrp':rigmodule.GlobalSpace,
     'bodySpaceGrp':rigmodule.BodySpace,
     'localSpaceGrp':rigmodule.LocalSpace,
+    'fkLocalSpaceGrp': fkLocalSpace,
     'toggleGrp':rigmodule.Toggle,
     'settingsGrp':rigmodule.Settings,
     'upperJnt':upperJnt,

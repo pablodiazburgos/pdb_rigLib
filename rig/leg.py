@@ -316,7 +316,10 @@ def build(
     
     # instance of rig module
     rigmodule = limbData['module']
-    
+
+    # parent fk local space
+    mc.parent(limbData['fkLocalSpaceGrp'], rigmodule.LocalSpace)
+
     # duplicate to create ik/fk toe, toe end joints and connect it to bind
     fkToeJnts, ikToeJnts = _createFkIkToes( rigmodule, toeJnt, toeEndJnt, limbData )
     
@@ -371,6 +374,7 @@ def build(
             'globalSpaceGrp':limbData['globalSpaceGrp'],
             'bodySpaceGrp':limbData['bodySpaceGrp'],
             'localSpaceGrp':limbData['localSpaceGrp'],
+            'fkLocalSpaceGrp': limbData['fkLocalSpaceGrp'],
             'toggleGrp':limbData['toggleGrp'],
             'settingsGrp':limbData['settingsGrp'],
             'toggleCtrl':limbData['toggleCtrl']

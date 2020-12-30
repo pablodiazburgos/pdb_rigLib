@@ -24,7 +24,9 @@ def build(
         prefix = 'neck',
         baseRigData = None,
         ctrlScale = 1.0,
-        stretch = False
+        stretch = False,
+        worldOrient = False,
+        useConstraints = False
         ):
     
     '''
@@ -102,7 +104,7 @@ def build(
     fkCtrlNames.append( prefix + 'Fk' )
     
     fkControlScale = ctrlScale * 4    
-    fkControls = general.makeFkControlChain( prefixSeq = fkCtrlNames, chain = neckJoints[:-1], scale = fkControlScale, constraintFirst = True, connectT = stretch, ctrlParent = rigmodule.Main, ctrlshape = 'circle' )
+    fkControls = general.makeFkControlChain( prefixSeq = fkCtrlNames, useConstraints = useConstraints, chain = neckJoints[:-1], scale = fkControlScale, constraintFirst = True, connectT = stretch, ctrlParent = rigmodule.Main, ctrlshape = 'circle', worldOrient = worldOrient )
     
     mc.parent( fkControls[0].Off, rigmodule.Controls )
     mc.parentConstraint( rigmodule.LocalSpace, fkControls[0].Off, mo = 1 )

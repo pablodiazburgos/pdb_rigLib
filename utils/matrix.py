@@ -24,7 +24,7 @@ def matrixParentConstraint( target, object, mo = False, connectTranslate = True,
     """
     Creates a parent constraint based on matrices
     :param target, pynode, constriant target node
-    :object object
+    :param object, pynode, constriant driven node
     """
     # create prefix for new nodes
     tgtPrefix =  name.getBase( target.name() )

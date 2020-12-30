@@ -255,7 +255,8 @@ def build(
     shape.centerPointsToObjects( [ limbData['ikBaseCtrl'].C ], [ clavicleJntChild ] )
     
     # attach controls
-    mc.parentConstraint( rigmodule.LocalSpace, limbData['ikBaseCtrl'].Off, sr = ['x', 'y', 'z'], mo = True )
+    mc.parentConstraint( rigmodule.LocalSpace, limbData['ikBaseCtrl'].Off, mo = True )
+
     upperFkCtrl = limbData['fkControls'][0]
     
     mc.parent( upperFkCtrl.Off, limbData['ikBaseCtrl'].C )
@@ -302,6 +303,7 @@ def build(
         'globalSpaceGrp':limbData['globalSpaceGrp'],
         'bodySpaceGrp':limbData['bodySpaceGrp'],
         'localSpaceGrp':limbData['localSpaceGrp'],
+        'fkLocalSpaceGrp': limbData['fkLocalSpaceGrp'],
         'toggleGrp':limbData['toggleGrp'],
         'settingsGrp':limbData['settingsGrp'],
         'toggleCtrl':limbData['toggleCtrl']

@@ -22,7 +22,8 @@ def makeFkControlChain( chain,
                         constraintFirst = False, 
                         prefixSeq = [], 
                         ctrlshape = 'cubeOnBase', 
-                        ctrlColorName = None, 
+                        ctrlColorName = None,
+                        worldOrient = False, 
                         ctrlParent = None ):
     
     '''
@@ -103,7 +104,12 @@ def makeFkControlChain( chain,
             
             lockHideList = []
         
-        ctrl = control.Control( lockHideChannels = lockHideList, prefix = jntPrefix, shape = ctrlshape, colorName = ctrlColorName, moveTo = chain[i], rotOrd = rotOrd, scale = scale, ctrlParent = ctrlParentObj )
+
+        rotateCtrl = chain[i]
+        if worldOrient:
+            rotateCtrl = ''
+        
+        ctrl = control.Control( lockHideChannels = lockHideList, prefix = jntPrefix, shape = ctrlshape, colorName = ctrlColorName, translateTo = chain[i],  rotateTo = rotateCtrl, rotOrd = rotOrd, scale = scale, ctrlParent = ctrlParentObj )
         
         if connectR:
             
