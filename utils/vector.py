@@ -6,7 +6,6 @@ module to work with vectors
 import maya.cmds as mc
 import maya.OpenMaya as om
 
-
 def makeMVector( values = [0.0, 0.0, 0.0] ):
     
     '''

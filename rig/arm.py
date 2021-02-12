@@ -285,7 +285,8 @@ def build(
     # create ik 
     clavicleIk = mc.ikHandle( n = prefix + 'Clavicle_ikh', sol = 'ikSCsolver', sj = ikClavicleJnt, ee = limbData['ikJoints'][0] )[0]
     mc.parent( clavicleIk, rigmodule.Parts )
-    mc.parentConstraint( limbData['ikBaseCtrl'].C, clavicleIk, mo = True, sr = ['x', 'y', 'z'] )
+    #mc.parentConstraint( limbData['ikBaseCtrl'].C, clavicleIk, mo = True, sr = ['x', 'y', 'z'] )
+    mc.parentConstraint( limbData['ikBaseCtrl'].C, clavicleIk, mo = True)
     mc.setAttr( clavicleIk + '.v', 0 )
     
     # hide ik and fk systems joints

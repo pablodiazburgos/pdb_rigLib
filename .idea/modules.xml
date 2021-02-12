@@ -2,12 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://G:/TRABAJO/gizmo/hearthstone/assets/Grommash/scripts/python/GrommashRig/.idea/GrommashRig.iml" filepath="G:/TRABAJO/gizmo/hearthstone/assets/Grommash/scripts/python/GrommashRig/.idea/GrommashRig.iml" />
-      <module fileurl="file://G:/TRABAJO/gizmo/got/assets/JamieLannister/scripts/python/JamieLannisterRig/.idea/JamieLannisterRig.iml" filepath="G:/TRABAJO/gizmo/got/assets/JamieLannister/scripts/python/JamieLannisterRig/.idea/JamieLannisterRig.iml" />
-      <module fileurl="file://H:/WORK/DreamHouse/projects/legodol/assets/cupid/scripts/python/cupidRig/.idea/cupidRig.iml" filepath="H:/WORK/DreamHouse/projects/legodol/assets/cupid/scripts/python/cupidRig/.idea/cupidRig.iml" />
+      <module fileurl="file://D:/work/gizmo/hearthstone/assets/Grommash/scripts/python/GrommashRig/.idea/GrommashRig.iml" filepath="D:/work/gizmo/hearthstone/assets/Grommash/scripts/python/GrommashRig/.idea/GrommashRig.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/pdb_rigLib.iml" filepath="$PROJECT_DIR$/.idea/pdb_rigLib.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../2019/scripts/rigit/.idea/rigit.iml" filepath="$PROJECT_DIR$/../2019/scripts/rigit/.idea/rigit.iml" />
-      <module fileurl="file://G:/TRABAJO/gizmo/crystalborne/assets/yurei/scripts/python/yureiRig/.idea/yureiRig.iml" filepath="G:/TRABAJO/gizmo/crystalborne/assets/yurei/scripts/python/yureiRig/.idea/yureiRig.iml" />
     </modules>
   </component>
 </project>
