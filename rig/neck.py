@@ -4,17 +4,17 @@ neck @ rig
 
 import maya.cmds as mc
 
-from . import general
+import general
 
-from ..base import module
-from ..base import control
+from base import module
+from base import control
 
-from ..utils import joint
-from ..utils import name
-from ..utils import shape
-from ..utils import transform
-from ..utils import vector
-from ..utils import anim
+from utils import joint
+from utils import name
+from utils import shape
+from utils import transform
+from utils import vector
+from utils import anim
 
 
 def build( 

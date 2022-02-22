@@ -9,8 +9,8 @@ import math
 import maya.cmds as mc
 import maya.OpenMaya as om
 
-from . import name
-from . import vector
+import name
+import vector
 
 def makeOffsetGrp( obj, prefix = '', suffix = 'Offset', inOrigin = False ):
     

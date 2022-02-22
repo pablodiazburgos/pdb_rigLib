@@ -6,9 +6,9 @@ functions for working with curves (nurbsCurves and bezierCurves)
 import maya.cmds as mc
 import maya.OpenMaya as om
 
-from . import apiwrap
-from . import name
-from . import shape
+import apiwrap
+import name
+import shape
 
 
 def makeConnectionLine( objectA, objectB, prefix = '', overrideMode = 1, curveParent = '' ):

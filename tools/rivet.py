@@ -8,12 +8,12 @@ functions for making rivet setup on meshes and nurbs
 
 import maya.cmds as mc
 
-from ..utils import name
-from ..utils import shape
-from ..utils import surface
-from ..utils import mesh
-from ..utils import hair
-from ..utils import transform
+from utils import name
+from utils import shape
+from utils import surface
+from utils import mesh
+from utils import hair
+from utils import transform
 
 
 
@@ -147,7 +147,7 @@ def classicrivet_mesh( edges, shapeobj, object, prefix ):
     :param edges: list( str ), 2 edges, e.g. ['pSphere1.e[237]', 'pSphere1.e[257]']
     :param object: str, name of object to be attached to rivet transform output
     :param prefix: str, name added to every new object
-    :return: list( list(str), str, str, str ), ( (shapeinput1,..shapeinput4), aimConstraint, pointOnSurfaceInfo, pointConstraint )
+    :return: list( list(str), str, str, str ), ( (shapeinput1,shapeinput4), aimConstraint, pointOnSurfaceInfo, pointConstraint )
     '''
     
     #===========================================================================

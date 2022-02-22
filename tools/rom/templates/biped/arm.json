@@ -1,0 +1,59 @@
+{
+    "clav": {
+        "control": "shoulder_L0_ctl",
+        "axis": [
+            "z",
+            "z",
+            "y"],
+        "val_list": [
+            [-40],
+            [50],
+            [-50]],
+        "special_attr": [],
+        "special_val": []
+    },
+     "shoulder": {
+        "control": "arm_L0_fk0_ctl",
+        "axis": [
+            "z",
+            "z",
+            "y",
+            "y",
+            "x"],
+        "val_list": [
+            [-90],
+            [90],
+            [-100],
+            [40],
+
+            [-90]],
+        "special_attr": [],
+        "special_val": []
+    },
+    "elbow": {
+        "control": "arm_L0_fk1_ctl",
+        "axis": [
+            "z"],
+        "val_list": [
+            [-110]],
+        "special_attr": [],
+        "special_val": []
+    },
+    "wrist": {
+        "control": "arm_L0_fk2_ctl",
+        "axis": [
+            "z",
+            "z",
+            "y",
+            "y",
+            "x"],
+        "val_list": [
+            [-40],
+            [40],
+            [60],
+            [-90],
+            [100]],
+        "special_attr": [],
+        "special_val": []
+    }
+}

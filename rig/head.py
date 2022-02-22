@@ -5,17 +5,17 @@ head module
 
 import maya.cmds as mc
 
-from ..utils import constraint
-from ..utils import name
-from ..utils import shape
-from ..utils import transform
-from ..utils import joint
-from ..utils import connect
+from utils import constraint
+from utils import name
+from utils import shape
+from utils import transform
+from utils import joint
+from utils import connect
 
-from ..base import control
-from ..base import module
+from base import control
+from base import module
 
-from ..rig import general
+from rig import general
 
 def build( 
         headJnt,

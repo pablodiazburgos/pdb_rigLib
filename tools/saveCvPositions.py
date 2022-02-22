@@ -14,7 +14,7 @@ from xml.dom.minidom import Document
 import maya.cmds as mc
 import maya.mel as mel
 
-from ..utils import name
+from utils import name
 
 
 def save( path, objects ):
@@ -171,7 +171,7 @@ def load( path, objects = [], loadColor = False, verbose = True ):
         
         if not mc.objExists( objname ):
             
-            if verbose: print '# loading shapes. Object %s doesn`t exist, skipping..' % objname
+            if verbose: print '# loading shapes. Object %s doesn`t exist, skipping' % objname
             continue
         
         compTyp = ''

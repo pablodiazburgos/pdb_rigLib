@@ -15,8 +15,8 @@ import maya.cmds as mc
 import maya.mel as mm
 import pymel.core as pm
 
-from . import name
-from . import shape
+import name
+import shape
 
 def getRelated( shapeObj ):
     

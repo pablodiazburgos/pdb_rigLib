@@ -10,12 +10,12 @@ import maya.cmds as mc
 import maya.mel as mm
 
 
-from . import shape
-from . import name
-from . import transform
-from . import surface
-from . import mesh
-from . import connect
+import shape
+import name
+import transform
+import surface
+import mesh
+import connect
 
 
 

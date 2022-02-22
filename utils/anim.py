@@ -5,7 +5,7 @@ module for manipulation animation stuffs
 
 import maya.cmds as mc
 
-from . import connect
+import connect
 
 def setDrivenKey( driver, driven, driverVals, drivenVals, intangtype = 'linear', outtangtype = 'linear', cleanDrivenPlug = True ):
     

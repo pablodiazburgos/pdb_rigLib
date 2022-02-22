@@ -8,7 +8,7 @@ Controls shapes to make different styles of controls
 import maya.cmds as mc
 
 
-from ..utils import shape
+from utils import shape
 
 def _printControlCVsPositionsForCreateControl( curveObj ):
     

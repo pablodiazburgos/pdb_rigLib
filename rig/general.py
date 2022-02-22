@@ -6,11 +6,11 @@ general rigs systems
 import maya.cmds as mc
 from collections import OrderedDict
 
-from ..base import control
-from ..base import module
+from base import control
+from base import module
 
-from ..utils import name
-from ..utils import shape
+from utils import name
+from utils import shape
 
 def makeFkControlChain( chain, 
                         prefix = '', 

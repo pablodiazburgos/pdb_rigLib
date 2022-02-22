@@ -4,8 +4,8 @@ ikChain @ rig
 
 import maya.cmds as mc
 
-from ..base import module
-from ..base import control
+from base import module
+from base import control
 
 def build(
         chainJoints,

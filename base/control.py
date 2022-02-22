@@ -5,8 +5,8 @@ module for making rig controls
 
 import maya.cmds as mc
 
-from ..utils import name
-from . import controlShapes
+from utils import name
+import controlShapes
 
 rigCtrlAt = 'animatedCtrl'
 rigInternalCtrlAt = 'internalCtrl'

@@ -5,15 +5,15 @@ eyes module
 
 import maya.cmds as mc
 
-from ..utils import constraint
-from ..utils import vector
-from ..utils import transform
-from ..utils import attribute
-from ..utils import curve
-from ..utils import joint
+from utils import constraint
+from utils import vector
+from utils import transform
+from utils import attribute
+from utils import curve
+from utils import joint
 
-from ..base import control
-from ..base import module
+from base import control
+from base import module
 
 def simpleEyes( leftEyeJnt, rightEyeJnt, prefix = 'eye', baseRigData = None, ctrlScale = 1.0 ):
 

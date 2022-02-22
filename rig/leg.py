@@ -6,17 +6,17 @@ Leg @ rig
 
 import maya.cmds as mc
 
-from ..base import module
-from ..base import control
+from base import module
+from base import control
 
 
-from ..utils import name
-from ..utils import joint
-from ..utils import anim
-from ..utils import transform
-from ..utils import attribute
-from ..utils import shape
-from ..utils import constraint
+from utils import name
+from utils import joint
+from utils import anim
+from utils import transform
+from utils import attribute
+from utils import shape
+from utils import constraint
 
 from . import limb
 

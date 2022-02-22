@@ -6,14 +6,14 @@ mouth module
 import maya.cmds as mc
 import pymel.core as pm
 
-from ..base import control
-from ..base import module
+from base import control
+from base import module
 
-from ..utils import name
-from ..utils import anim
-from ..utils import transform
-from ..utils import connect
-from ..utils import shape
+from utils import name
+from utils import anim
+from utils import transform
+from utils import connect
+from utils import shape
 
 #TODO: commment builLips func 
 def buildSimpleLips(

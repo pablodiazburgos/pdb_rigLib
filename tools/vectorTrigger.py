@@ -5,7 +5,7 @@ module to make a vector trigger setup at pdb_rigLib.tools
 
 import maya.cmds as mc
 
-from ..utils import name
+from utils import name
 
 triggerSuffix = 'Trigger'
 

@@ -6,13 +6,13 @@ base module to rig base hierarchy and connections
 
 import maya.cmds as mc
 
-from ..utils import attribute
-from ..utils import name
-from ..utils import anim
+from utils import attribute
+from utils import name
+from utils import anim
 
 
-from . import control
-from . import module
+import control
+import module
 
 controlVisAt = 'controlVis'
 

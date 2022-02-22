@@ -4,10 +4,10 @@ _logger = logging.getLogger( __name__ )
 
 import pymel.core as pm
 
-from ..base import control
+from base import control
 
-from ..utils import matrix
-from ..utils import name
+from utils import matrix
+from utils import name
 
 #TODO check changing parent constraint to baseVolJnt from baseJnt to rotJnt Point constraint
 #TODO and orient constraint from baseJnt this will help in strechy joints

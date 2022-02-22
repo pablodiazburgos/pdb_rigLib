@@ -5,16 +5,15 @@ Module with some functions for iclone rig creation
 import maya.cmds as mc
 import maya.OpenMaya as om
 
-from ..utils import shape
-from ..utils import skinCluster
-from ..utils import joint
-from ..utils import vector
+from utils import shape
+from utils import skinCluster
+from utils import joint
+from utils import vector
 
-from pdb_rigLib.tools import saveSkinWeights
-from pdb_rigLib.tools import bSkinSaver
-from pdb_rigLib.tools import poleVector
-from pdb_rigLib.tools import footRigLocators
-from __builtin__ import True
+from tools import saveSkinWeights
+from tools import bSkinSaver
+from tools import poleVector
+from tools import footRigLocators
 
 # define components path
 assetModelFilePath = '%smodel/%s_model.ma'
@@ -69,7 +68,7 @@ def prepareModel( assetName, assetFolder, modelSource = 'CC', verbose = False ):
     fuction to rename joints and export weights and model/blendshapes to corresponding folders and delete model/blendshapes from current scene 
     :param assetName: str, name of the asset we are working on
     :param assetFolder: str, asset folder directory to save multiple stuffs
-    :param modelSource: str, source file to be rigged... current only work for 'CC'(character creator) and 'RP6'(iclone resource pack 6)
+    :param modelSource: str, source file to be rigged. current only work for 'CC'(character creator) and 'RP6'(iclone resource pack 6)
     :param verbose: bool, print different items while is creating the rig( usually good for debug )
     :return None
     '''
@@ -177,7 +176,7 @@ def _RP6FixJointNames( verbose ):
     :return None
     '''
     
-    # there is a clashing with "Hair"... rename joint to avoid this
+    # there is a clashing with "Hair". rename joint to avoid this
     
     if len( mc.ls( 'Hair' ) ) > 1:
         hairJnt = mc.ls( 'Hair', type = 'joint' )[0]
@@ -382,7 +381,7 @@ def fixJointHierarchy(pelvis2YSubs = 14, toeExtendFactor = 2.0, headExtendFactor
     mc.parent( boneRoot, buildSkeletonGrp )
     
     extraBoneRoot = 'RL_ExtendedRoot'
-    # if extra bone root joint exists parent it in build skeleton ... usually exists in RP6 type rigs
+    # if extra bone root joint exists parent it in build skeleton . usually exists in RP6 type rigs
     if mc.objExists( extraBoneRoot ):
         mc.parent( extraBoneRoot, buildSkeletonGrp )
     
@@ -537,7 +536,7 @@ def fixCCJointsOrient():
         upperLegTwist = joint.listHierarchy( side + 'hipTwist1_jnt', withEndJoints = True )
         lowerLegTwist = joint.listHierarchy( side + 'footTwist1_jnt', withEndJoints = True )
         
-        # orient hip joint ... this must be alone since it orientation is different than the other ones
+        # orient hip joint . this must be alone since it orientation is different than the other ones
         joint.orient( jointsList = [ side + hipJnt ], 
           aimAxis = aimAxis,
           upAxis = hipUpAxis, 

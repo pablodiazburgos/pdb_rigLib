@@ -4,7 +4,7 @@ functions for working with mesh and polygons
 '''
 
 import maya.cmds as mc
-from . import shape
+import shape
 
 def getClosestMeshInfo( meshObject, refTransform = None, refPosition = [0, 0, 0] ):
     

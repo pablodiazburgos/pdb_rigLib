@@ -8,19 +8,19 @@ Module to make limbs
 
 import maya.cmds as mc
 
-from ..base import module
-from ..base import control
+from base import module
+from base import control
 
-from ..utils import name
-from ..utils import shape
-from ..utils import transform
-from ..utils import constraint
-from ..utils import curve
-from ..utils import joint
-from ..utils import distanceBetween
-from ..utils import connect
-from ..utils import attribute
-from ..utils import vector
+from utils import name
+from utils import shape
+from utils import transform
+from utils import constraint
+from utils import curve
+from utils import joint
+from utils import distanceBetween
+from utils import connect
+from utils import attribute
+from utils import vector
 
 straightLimitPercentAt = 'straightLimitPerc'
 currentLengthPercentAt = 'currentLengthPerc'

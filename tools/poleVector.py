@@ -6,8 +6,8 @@ import math
 import maya.cmds as mc
 import maya.OpenMaya as om
 
-from ..utils import vector
-from ..utils import name
+from utils import vector
+from utils import name
 
 def findPoleVectorPosition( topJnt, midJnt, endJnt, posOffset = 2 ):
     
@@ -67,7 +67,7 @@ def findPoleVectorPosition( topJnt, midJnt, endJnt, posOffset = 2 ):
 
 def poleVectorReferenceLocator( topJnt, midJnt, endJnt, prefix = '' ):
     """
-    Create a locator where pole vector should be... this locator gets affected by the joints plane
+    Create a locator where pole vector should be. this locator gets affected by the joints plane
     this script should be used just temporary after find the right position just delete everything
     :param topJnt: str, top joint of chain to get pv position (e.g hip/shoulder)
     :param midJnt: str, mid joint of chain to get pv position (e.g knee/elbow)

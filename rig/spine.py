@@ -8,15 +8,15 @@ from itertools import count
 import maya.cmds as mc
 import maya.OpenMaya as om
 
-from ..base import module
-from ..base import control
+from base import module
+from base import control
 
-from . import general
+import general
 
-from ..utils import joint
-from ..utils import name
-from ..utils import attribute
-from ..utils import apiwrap
+from utils import joint
+from utils import name
+from utils import attribute
+from utils import apiwrap
 
 def buildSimpleFk(
         rootJnt,

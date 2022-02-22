@@ -4,13 +4,13 @@ eyelids module
 """
 import maya.cmds as mc
 
-from ..base import module
-from ..base import control
+from base import module
+from base import control
 
-from ..utils import name
-from ..utils import shape
-from ..utils import attribute
-from ..utils import transform
+from utils import name
+from utils import shape
+from utils import attribute
+from utils import transform
 
 
 def singleJoint( 

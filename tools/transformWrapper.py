@@ -5,11 +5,11 @@ transformWrapper
 '''
 import maya.cmds as mc
 
-from ..utils import name
-from ..utils import constraint
-from ..utils import connect
+from utils import name
+from utils import constraint
+from utils import connect
 
-from ..tools import rivet
+from tools import rivet
 
 def makePlaneDrivers( prefix = 'driverPlanes', transforms = None, size = 1.0, normalAxis = [1, 0, 0], attachTransforms = True ):
     

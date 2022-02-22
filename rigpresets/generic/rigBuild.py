@@ -18,37 +18,37 @@ import maya.cmds as mc
 import maya.mel as mm
 import maya.OpenMaya as om
 
-from pdb_rigLib.base import control
-from pdb_rigLib.base import module
-from pdb_rigLib.base import base
+from base import control
+from base import module
+from base import base
 
-from pdb_rigLib.rig import spine
-from pdb_rigLib.rig import neck
-from pdb_rigLib.rig import ikChain
-from pdb_rigLib.rig import leg
-from pdb_rigLib.rig import arm
-from pdb_rigLib.rig import hand
-from pdb_rigLib.rig import head
-from pdb_rigLib.rig import eyes
-from pdb_rigLib.rig import eyebrow
-from pdb_rigLib.rig import eyelids
-from pdb_rigLib.rig import tongue
-from pdb_rigLib.rig import mouth
-from pdb_rigLib.rig import general
-from pdb_rigLib.rig import tail
+from rig import spine
+from rig import neck
+from rig import ikChain
+from rig import leg
+from rig import arm
+from rig import hand
+from rig import head
+from rig import eyes
+from rig import eyebrow
+from rig import eyelids
+from rig import tongue
+from rig import mouth
+from rig import general
+from rig import tail
 
-from pdb_rigLib.tools import saveSkinWeights
-from pdb_rigLib.tools import saveCvPositions
-from pdb_rigLib.tools import bSkinSaver
-from pdb_rigLib.tools import transformWrapper
+from tools import saveSkinWeights
+from tools import saveCvPositions
+from tools import bSkinSaver
+from tools import transformWrapper
 
-from pdb_rigLib.utils import joint
-from pdb_rigLib.utils import name
-from pdb_rigLib.utils import shape
-from pdb_rigLib.utils import transform
-from pdb_rigLib.utils import constraint
-from pdb_rigLib.utils import vector
-from pdb_rigLib.utils import anim
+from utils import joint
+from utils import name
+from utils import shape
+from utils import transform
+from utils import constraint
+from utils import vector
+from utils import anim
 
 
 # define the main asset folder of the asset after import the rig.py,  example: rig.mainAssetFolder = D:/TRABAJO/autoRig/assets/%s

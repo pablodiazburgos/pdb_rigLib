@@ -7,8 +7,8 @@ belt module
 
 import maya.cmds as mc
 
-from ..utils import name
-from ..utils import shape
+from utils import name
+from utils import shape
 
 
 def makeFollicleBelt( beltSurface, numjoints, prefix = '', lengthParam = 'v' ):

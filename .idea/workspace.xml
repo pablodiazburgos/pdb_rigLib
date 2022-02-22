@@ -1,17 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="2ababa6e-d8c7-4aac-b63a-4f5bca337a27" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/Pablo_Diaz_Burgos.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+    <list default="true" id="359db2db-8048-4732-81af-abee49cc428d" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/pdb_rigLib.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/pdb_rigLib.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.project" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.pydevproject" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vs/ProjectSettings.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vs/VSWorkspaceState.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vs/pdb_rigLib/v16/.suo" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vs/slnx.sqlite" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/base/base.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/control.py" beforeDir="false" afterPath="$PROJECT_DIR$/base/control.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/controlShapes.py" beforeDir="false" afterPath="$PROJECT_DIR$/base/controlShapes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/module bkp.py" beforeDir="false" afterPath="$PROJECT_DIR$/base/module bkp.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/base/module.py" beforeDir="false" afterPath="$PROJECT_DIR$/base/module.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rig/arm.py" beforeDir="false" afterPath="$PROJECT_DIR$/rig/arm.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rig/belt.py" beforeDir="false" afterPath="$PROJECT_DIR$/rig/belt.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rig/eyebrow.py" beforeDir="false" afterPath="$PROJECT_DIR$/rig/eyebrow.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rig/eyelids.py" beforeDir="false" afterPath="$PROJECT_DIR$/rig/eyelids.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rig/eyes.py" beforeDir="false" afterPath="$PROJECT_DIR$/rig/eyes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rig/general.py" beforeDir="false" afterPath="$PROJECT_DIR$/rig/general.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rig/hand.py" beforeDir="false" afterPath="$PROJECT_DIR$/rig/hand.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rig/head.py" beforeDir="false" afterPath="$PROJECT_DIR$/rig/head.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rig/hindLeg.py" beforeDir="false" afterPath="$PROJECT_DIR$/rig/hindLeg.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rig/ikChain.py" beforeDir="false" afterPath="$PROJECT_DIR$/rig/ikChain.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rig/leg.py" beforeDir="false" afterPath="$PROJECT_DIR$/rig/leg.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rig/limb.py" beforeDir="false" afterPath="$PROJECT_DIR$/rig/limb.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rig/mouth.py" beforeDir="false" afterPath="$PROJECT_DIR$/rig/mouth.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rig/neck.py" beforeDir="false" afterPath="$PROJECT_DIR$/rig/neck.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rig/spine.py" beforeDir="false" afterPath="$PROJECT_DIR$/rig/spine.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rig/tail.py" beforeDir="false" afterPath="$PROJECT_DIR$/rig/tail.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rig/tongue.py" beforeDir="false" afterPath="$PROJECT_DIR$/rig/tongue.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rig_spineAlexis.py" beforeDir="false" afterPath="$PROJECT_DIR$/rig_spineAlexis.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rigpresets/generic/rig.py" beforeDir="false" afterPath="$PROJECT_DIR$/rigpresets/generic/rigBuild.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rigpresets/generic/rig_game.py" beforeDir="false" afterPath="$PROJECT_DIR$/rigpresets/generic/rig_game.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/footRigLocators.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/footRigLocators.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/gameTools.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/gameTools.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/iclone.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/iclone.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/makeBaseFolders.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/makeBaseFolders.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/poleVector.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/poleVector.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/rivet.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/rivet.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/saveCvPositions.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/saveCvPositions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/saveSkinWeights.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/saveSkinWeights.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/saveSkinWeights_bkc.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/strechyJoint.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/strechyJoint.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/transformWrapper.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/transformWrapper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/vectorTrigger.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/vectorTrigger.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/volumeJoints.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/volumeJoints.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/anim.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/anim.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/blendShape.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/blendShape.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/constraint.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/constraint.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/curve.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/curve.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/hair.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/hair.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/joint.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/joint.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/vector.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/vector.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/matrix.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/matrix.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/mesh.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/mesh.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/shape.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/shape.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/skinCluster.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/skinCluster.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/surface.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/surface.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/transform.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/transform.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,7 +82,7 @@
       <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
     </file-type-list>
   </component>
-  <component name="ProjectId" id="1nXab61DBaBfTVfhx8MeOyQtD65" />
+  <component name="ProjectId" id="25RFd78PNZT5ReoTR3cZFDotp5Q" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -37,17 +90,25 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="preferences.editor.code.editing" />
+  </component>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings module-name="pdb_rigLib" is-module-sdk="true">
+        <option name="myUseModuleSdk" value="true" />
+        <option name="myModuleName" value="pdb_rigLib" />
+      </console-settings>
+    </option>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="2ababa6e-d8c7-4aac-b63a-4f5bca337a27" name="Default Changelist" comment="" />
-      <created>1611538959857</created>
+      <changelist id="359db2db-8048-4732-81af-abee49cc428d" name="Default Changelist" comment="" />
+      <created>1645482076845</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1611538959857</updated>
+      <updated>1645482076845</updated>
     </task>
     <servers />
   </component>

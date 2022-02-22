@@ -7,22 +7,22 @@ module for tails, tentacles , aerial kind of stuffs
 import maya.cmds as mc
 import pymel.core as pm
 
-from ..utils import constraint
-from ..utils import joint
-from ..utils import vector
-from ..utils import curve
-from ..utils import transform
-from ..utils import attribute
-from ..utils import name
-from ..utils import matrix
-from ..utils import anim
-from ..utils import connect
-from ..utils import shape
+from utils import constraint
+from utils import joint
+from utils import vector
+from utils import curve
+from utils import transform
+from utils import attribute
+from utils import name
+from utils import matrix
+from utils import anim
+from utils import connect
+from utils import shape
 
-from ..base import module
-from ..base import control
+from base import module
+from base import control
 
-from . import general
+import general
 
 def buildSimpleIk(
                   chainJoints,

@@ -6,7 +6,7 @@ import maya.cmds as mc
 
 sceneObjectType = 'rig'
 
-from . import control
+import control
 
 
 class Module():

@@ -6,9 +6,9 @@ constraint library
 import maya.cmds as mc
 import maya.mel as mm
 
-from . import anim
-from . import transform
-from . import name
+import anim
+import transform
+import name
 
 #TODO: study makeSwitch and multiSwitch fuctions
 

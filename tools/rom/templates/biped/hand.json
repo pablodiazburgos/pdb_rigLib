@@ -1,0 +1,173 @@
+{
+    "thumb0": {
+        "control": "thumb_L0_fk0_ctl",
+        "axis": [
+            "z"],
+        "val_list": [
+            [25]],
+        "special_attr": [],
+        "special_val": []
+    },
+    "thumb1": {
+        "control": "thumb_L0_fk1_ctl",
+        "axis": [
+            "z"],
+        "val_list": [
+            [55]],
+        "special_attr": [],
+        "special_val": []
+    },
+    "thumb2": {
+        "control": "thumb_L0_fk2_ctl",
+        "axis": [
+            "z"],
+        "val_list": [
+            [75]],
+        "special_attr": [],
+        "special_val": []
+    },
+    "indexMeta0": {
+        "control": "meta_L3_fk0_ctl",
+        "axis": [
+            "z"],
+        "val_list": [
+            [-20]],
+        "special_attr": [],
+        "special_val": []
+    },
+    "index0": {
+        "control": "finger_L3_fk0_ctl",
+        "axis": [
+            "z"],
+        "val_list": [
+            [90]],
+        "special_attr": [],
+        "special_val": []
+    },
+    "index1": {
+        "control": "finger_L3_fk1_ctl",
+        "axis": [
+            "z"],
+        "val_list": [
+            [90]],
+        "special_attr": [],
+        "special_val": []
+    },
+    "index2": {
+        "control": "finger_L3_fk2_ctl",
+        "axis": [
+            "z"],
+        "val_list": [
+            [90]],
+        "special_attr": [],
+        "special_val": []
+    },
+    "midMeta0": {
+        "control": "meta_L2_fk0_ctl",
+        "axis": [
+            "z"],
+        "val_list": [
+            [-20]],
+        "special_attr": [],
+        "special_val": []
+    },
+    "mid0": {
+        "control": "finger_L2_fk0_ctl",
+        "axis": [
+            "z"],
+        "val_list": [
+            [90]],
+        "special_attr": [],
+        "special_val": []
+    },
+    "mid1": {
+        "control": "finger_L2_fk1_ctl",
+        "axis": [
+            "z"],
+        "val_list": [
+            [90]],
+        "special_attr": [],
+        "special_val": []
+    },
+    "mid2": {
+        "control": "finger_L2_fk2_ctl",
+        "axis": [
+            "z"],
+        "val_list": [
+            [90]],
+        "special_attr": [],
+        "special_val": []
+    },
+    "ringMeta0": {
+        "control": "meta_L1_fk0_ctl",
+        "axis": [
+            "z"],
+        "val_list": [
+            [-20]],
+        "special_attr": [],
+        "special_val": []
+    },
+    "ring0": {
+        "control": "finger_L1_fk0_ctl",
+        "axis": [
+            "z"],
+        "val_list": [
+            [90]],
+        "special_attr": [],
+        "special_val": []
+    },
+    "ring1": {
+        "control": "finger_L1_fk1_ctl",
+        "axis": [
+            "z"],
+        "val_list": [
+            [90]],
+        "special_attr": [],
+        "special_val": []
+    },
+    "ring2": {
+        "control": "finger_L1_fk2_ctl",
+        "axis": [
+            "z"],
+        "val_list": [
+            [90]],
+        "special_attr": [],
+        "special_val": []
+    },
+    "pinkyMeta0": {
+        "control": "meta_L0_fk0_ctl",
+        "axis": [
+            "z"],
+        "val_list": [
+            [-20]],
+        "special_attr": [],
+        "special_val": []
+    },
+    "pinky0": {
+        "control": "finger_L0_fk0_ctl",
+        "axis": [
+            "z"],
+        "val_list": [
+            [90]],
+        "special_attr": [],
+        "special_val": []
+    },
+    "pinky1": {
+        "control": "finger_L0_fk1_ctl",
+        "axis": [
+            "z"],
+        "val_list": [
+            [90]],
+        "special_attr": [],
+        "special_val": []
+    },
+    "pinky2": {
+        "control": "finger_L0_fk2_ctl",
+        "axis": [
+            "z"],
+        "val_list": [
+            [90]],
+        "special_attr": [],
+        "special_val": []
+    }
+}

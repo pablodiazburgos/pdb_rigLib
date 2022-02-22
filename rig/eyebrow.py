@@ -6,13 +6,13 @@ eyebrows module
 import maya.cmds as mc
 import pymel.core as pm
 
-from ..utils import name
-from ..utils import shape
-from ..utils import constraint
-from ..utils import transform
+from utils import name
+from utils import shape
+from utils import constraint
+from utils import transform
 
-from ..base import control
-from ..base import module
+from base import control
+from base import module
 
 
 

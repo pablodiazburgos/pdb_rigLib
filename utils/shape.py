@@ -5,7 +5,7 @@ module to work with shape functions
 
 import maya.cmds as mc
 
-from . import name
+import name
 
 def getShape( object, useLongName = False, noIntermediate = True, shapeTypes = [] ):
     """

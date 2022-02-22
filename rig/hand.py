@@ -5,12 +5,12 @@ hand module
 
 import maya.cmds as mc
 
-from . import general
+import general
 
-from ..base import module
+from base import module
 
-from ..utils import name
-from ..utils import joint
+from utils import name
+from utils import joint
 
 
 def build(

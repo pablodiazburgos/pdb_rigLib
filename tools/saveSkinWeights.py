@@ -19,11 +19,11 @@ import maya.mel as mm
 import maya.OpenMaya as om
 import maya.OpenMayaAnim as oma
 
-from ..utils import name
-from ..utils import skinCluster
-from ..utils import shape
-from ..utils import apiwrap
-from ..utils import surface
+from utils import name
+from utils import skinCluster
+from utils import shape
+from utils import apiwrap
+from utils import surface
 
 
 deformedSuffix = 'Deformed'  # this refers to suffix which Maya adds to deformed shapes of referenced transforms
@@ -186,7 +186,7 @@ def saveParallelWeights( filePath, skinMesh = '' ):
     skinClusters = skinCluster.getMultipleRelated( skinMesh )
     
     if not skinClusters:
-        print '# No skin clusters attached to "{}"...Skipping'.format( skinMesh )
+        print '# No skin clusters attached to "{}".Skipping'.format( skinMesh )
         return
     
     # directory to hold all the skin clusters info
@@ -285,7 +285,7 @@ def loadParallelWeights( filePath ):
     
     # check if the target mesh exists , if not just skip this load
     if not pm.objExists( skinMesh ):
-        print '# could not find "{}"... skipping this load'.format( skinMesh )
+        print '# could not find "{}". skipping this load'.format( skinMesh )
         return
     
     # save all the skin clusters

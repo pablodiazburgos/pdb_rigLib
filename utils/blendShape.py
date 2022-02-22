@@ -7,7 +7,7 @@ module to work with blendshapes at pdb_rigLib.utils
 import maya.cmds as mc
 import maya.OpenMaya as om
 
-from . import name
+import name
 
 def invertTargetVtxWeights( baseGeo, sourceBls, targetBls, blsNode = None ):
     

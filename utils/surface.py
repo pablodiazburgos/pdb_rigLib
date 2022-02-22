@@ -6,8 +6,8 @@ functions for working with surfaces (nurbsSurface)
 
 import maya.cmds as mc
 
-from . import name
-from . import shape
+import name
+import shape
 
 def getUvCvSizes( surfaceObj ):
     

@@ -7,7 +7,7 @@ matrix
 import maya.cmds as mc
 import pymel.core as pm
 
-from . import name
+import name
 
 def makeBlendMatrices( transforms, prefix = 'mxblend' ):
     

@@ -5,15 +5,15 @@ arm module
 
 import maya.cmds as mc
 
-from . import limb
-from . import general
+import limb
+import general
 
-from ..base import control
-from ..utils import shape
-from ..utils import constraint
-from ..utils import name
-from ..utils import transform
-from ..utils import connect
+from base import control
+from utils import shape
+from utils import constraint
+from utils import name
+from utils import transform
+from utils import connect
 
 def build_old( 
             clavicleJnt,

@@ -7,12 +7,12 @@ import maya.cmds as mc
 
 sceneObjectType = 'rig'
 
-from . import control
+import control
 
-from ..utils import attribute
-from ..utils import anim
-from ..utils import connect
-from ..utils import name
+from utils import attribute
+from utils import anim
+from utils import connect
+from utils import name
 
 rigModuleNameAt = 'rigModuleName'
 controlSectionVisAt = 'controlVis'

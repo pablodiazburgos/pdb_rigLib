@@ -6,9 +6,9 @@ footRigLocators
 
 import maya.cmds as mc
 
-from ..utils import name
-from ..utils import vector
-from ..utils import transform
+from utils import name
+from utils import vector
+from utils import transform
 
 def build(ankleJoint, toeJoint, toeEndJoint, prefix = '', scale = 1.0 ):
     

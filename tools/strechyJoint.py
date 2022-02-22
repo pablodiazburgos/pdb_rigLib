@@ -9,7 +9,7 @@ import logging
 _logger = logging.getLogger( __name__ )
 
 
-from ..utils import matrix
+from utils import matrix
 
 def setupFromJoint( 
                     rigModule, 

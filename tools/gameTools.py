@@ -10,11 +10,11 @@ import os.path
 import maya.cmds as mc
 import maya.mel as mm
 
-from ..utils import joint
-from ..utils import name
-from ..utils import skinCluster
+from utils import joint
+from utils import name
+from utils import skinCluster
 
-from . import bSkinSaver
+import bSkinSaver
 
 def createGameJoints( skinnedObjects = [], gamePrefix = 'game_', baseRigData = None ):
     
@@ -188,5 +188,5 @@ def loadGameSkinClusterWeights( weightsPath ):
             mc.rename( skinClusterName, loadedGeo + '_skc' )
         
         except:
-            '# not able to load {} ...skip'.format( wtFile )
+            '# not able to load {} .skip'.format( wtFile )
 

@@ -7,7 +7,7 @@ Module to make the base structure of folders and subfolders for rigging
 import os
 import shutil
 
-from ..rigpresets.generic import rig
+from rigpresets.generic import rigBuild
 
 class CreateFolders():
     
@@ -76,7 +76,7 @@ class CreateFolders():
         parentDir = os.path.join( self.rootDir, self.assetName )
         pythonScriptFolder = 'scripts/python'
         initFile = '__init__.py'
-        genericRigFile = 'rig.py'
+        genericRigFile = 'rigBuild.py'
         genericRigFileSource = genericRigFile
         genericGameFile = 'rig_game.py'
         
@@ -87,7 +87,7 @@ class CreateFolders():
         rigModuleDestinationDir = os.path.join( parentDir, pythonScriptFolder )
         rigScriptFileDestinationDir = os.path.join( rigModuleDestinationDir, rigModuleDir )
         
-        rigFileDir = os.path.dirname( rig.__file__ )
+        rigFileDir = os.path.dirname( rigBuild.__file__ )
         rigScriptFilepathSource = os.path.join( rigFileDir, genericRigFileSource )
         
         rigScriptFilepathDest = os.path.join( rigScriptFileDestinationDir, genericRigFile )

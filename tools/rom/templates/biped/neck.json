@@ -1,0 +1,41 @@
+{
+    "neck0": {
+        "control": "neck_C0_fk0_ctl",
+        "axis": [
+            "x",
+            "y",
+            "x"],
+        "val_list": [
+            [40],
+            [-40],
+            [-45]],
+        "special_attr": [],
+        "special_val": []
+    },
+     "neck1": {
+        "control": "neck_C0_fk1_ctl",
+        "axis": [
+            "x",
+            "z",
+            "x"],
+        "val_list": [
+            [40],
+            [-40],
+            [-45]],
+        "special_attr": [],
+        "special_val": []
+    },
+    "head": {
+        "control": "neck_C0_head_ctl",
+        "axis": [
+            "x",
+            "z",
+            "x"],
+        "val_list": [
+            [35],
+            [-35],
+            [-35]],
+        "special_attr": [],
+        "special_val": []
+    }
+}

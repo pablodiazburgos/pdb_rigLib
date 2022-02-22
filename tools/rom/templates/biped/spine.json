@@ -1,0 +1,41 @@
+{
+    "spine1": {
+        "control": "spine_C0_fk0_ctl",
+        "axis": [
+            "x",
+            "z",
+            "x"],
+        "val_list": [
+            [40],
+            [-40],
+            [-40]],
+        "special_attr": [],
+        "special_val": []
+    },
+     "spine2": {
+        "control": "spine_C0_fk1_ctl",
+        "axis": [
+            "x",
+            "z",
+            "x"],
+        "val_list": [
+            [40],
+            [-40],
+            [-40]],
+        "special_attr": [],
+        "special_val": []
+    },
+    "spine3": {
+        "control": "spine_C0_fk2_ctl",
+        "axis": [
+            "x",
+            "z",
+            "x"],
+        "val_list": [
+            [40],
+            [-40],
+            [-40]],
+        "special_attr": [],
+        "special_val": []
+    }
+}

@@ -7,12 +7,12 @@ Utilities to work with joints
 import maya.cmds as mc
 import maya.OpenMaya as om
 
-from . import name
-from . import connect
-from . import attribute
-from . import transform
-from . import vector
-from . import apiwrap
+import name
+import connect
+import attribute
+import transform
+import vector
+import apiwrap
 
 
 def listHierarchy( topJoint, withEndJoints = True ):
